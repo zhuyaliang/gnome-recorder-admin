@@ -1,9 +1,8 @@
 CC = gcc  
-MAINC = main.c
+MAINC = main.c screen-style.c screen-stop.c -g screen-save.c
 EXEC = style
-DEPLIB = -lXtst -lXmu -lXt -lXext -lX11
 CFLAGS = `pkg-config --cflags --libs gtk+-3.0`
 main: 
-	$(CC) -g $(MAINC)  -o $(EXEC) $(CFLAGS) $(DEPLIB)
+	$(CC) -g $(MAINC)  -o $(EXEC) $(CFLAGS)
 clean:
 	rm $(EXEC) -rf
