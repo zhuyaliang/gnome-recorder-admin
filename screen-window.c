@@ -17,6 +17,7 @@
                                                
   Created Time: 2020年12月15日 星期二 11时17分28秒
  ************************************************************************/
+#include <libappindicator/app-indicator.h>
 
 #include "screen-window.h"
 #include "screen-style.h"
@@ -40,6 +41,66 @@ struct _ScreenWindowPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
+static void
+screen_admin_satrt (GSimpleAction *action,
+                    GVariant      *parameter,
+                    gpointer       user_data)
+{
+}
+static void
+screen_admin_stop (GSimpleAction *action,
+                   GVariant      *parameter,
+                   gpointer       user_data)
+{
+}
+static void
+screen_admin_quit (GSimpleAction *action,
+                   GVariant      *parameter,
+                   gpointer       user_data)
+{
+}
+static void
+screen_admin_skip (GSimpleAction *action,
+                   GVariant      *parameter,
+                   gpointer       user_data)
+{
+}
+static const GActionEntry actions[] = {
+  { "screen-admin-start", screen_admin_satrt},
+  { "screen-admin-stop",  screen_admin_stop},
+  { "screen-admin-quit",  screen_admin_quit},
+  { "screen-admin-skip",  screen_admin_skip},
+};
+
+static void create_screencast_indicator (void)
+{
+    AppIndicator *indicator;
+    GSimpleActionGroup *action_group;
+    GtkBuilder   *builder;
+    GMenuModel   *menu_model;
+    GtkWidget    *window;
+    GtkMenu      *menu;
+    GError       *error = NULL;
+
+    indicator = app_indicator_new ("screen-admin",
+                                   "camera-video",
+                                    APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    builder = gtk_builder_new_from_file ("./menu.ui");
+    menu_model = G_MENU_MODEL (gtk_builder_get_object (builder,"ScrreenAdminPopup"));
+
+
+    action_group = g_simple_action_group_new ();
+    g_action_map_add_action_entries (G_ACTION_MAP (action_group),
+                                     actions,
+                                     G_N_ELEMENTS (actions),
+                                     NULL);
+    menu = GTK_MENU (gtk_menu_new_from_model (menu_model));
+    gtk_widget_insert_action_group (GTK_WIDGET (menu), "app", G_ACTION_GROUP (action_group));
+
+    app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
+    app_indicator_set_title (indicator, "screen-admin");
+    app_indicator_set_menu (indicator, menu);
+}
 static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
 {   
     GVariantBuilder *builder;
@@ -51,7 +112,6 @@ static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
     show_cursor = screen_style_get_show_cursor (style);
     framerate = screen_style_get_framerate (style);
     
-    g_print ("framerate = %d \r\n",framerate);
     builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
     g_variant_builder_add (builder, "{sv}", "draw-cursor",g_variant_new_boolean (show_cursor));
     g_variant_builder_add (builder, "{sv}", "framerate", g_variant_new_uint32 (framerate));
@@ -139,6 +199,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
     gboolean active;
 
     screen_start_count_down (count);
+    create_screencast_indicator ();
     active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button));
     if (active)
         gtk_button_set_label (GTK_BUTTON (button), _("Stop"));
