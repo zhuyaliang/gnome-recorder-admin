@@ -29,16 +29,108 @@
 
 struct _ScreenWindowPrivate 
 {
-    GDBusProxy  *proxy;
+    GDBusProxy *proxy;
 
     GtkWidget  *style;
     GtkWidget  *stop;
     GtkWidget  *save;
     GtkWidget  *count;
+    gboolean    is_start;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
+static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
+{   
+    GVariantBuilder *builder;
+    gboolean  show_cursor;
+    uint       framerate;
+    
+    ScreenStyle *style = SCREEN_STYLE (screenwin->priv->style);
+
+    show_cursor = screen_style_get_show_cursor (style);
+    framerate = screen_style_get_framerate (style);
+    
+    g_print ("framerate = %d \r\n",framerate);
+    builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+    g_variant_builder_add (builder, "{sv}", "draw-cursor",g_variant_new_boolean (show_cursor));
+    g_variant_builder_add (builder, "{sv}", "framerate", g_variant_new_uint32 (framerate));
+    
+    return builder;
+
+}
+
+static char *get_screencast_save_path (ScreenSave *save)
+{
+    char     *save_path;
+    char     *folder_name;
+    char     *file_name;
+    char     *new_name;
+    int       num = 1;
+    folder_name = screen_save_get_folder_name (save);
+    file_name = screen_save_get_file_name (save);
+
+    save_path = g_build_filename (folder_name, file_name, NULL);
+    if (!g_file_test (save_path, G_FILE_TEST_EXISTS))
+        return save_path;
+
+    while (TRUE)
+    {
+        new_name = g_strdup_printf ("%s-%d", file_name, num);
+        save_path = g_build_filename (folder_name, new_name, NULL);
+        g_free (new_name);
+        if (!g_file_test (save_path, G_FILE_TEST_EXISTS))
+            return save_path;
+        num++;
+    }
+
+}
+
+static void start_screencast (ScreenWindow *screenwin)
+{
+    GVariantBuilder *variant;
+    char            *save_path;
+    ScreenSave      *save;
+  
+    save = SCREEN_SAVE (screenwin->priv->save);
+    
+    variant = get_screencast_variant (screenwin);
+    save_path = get_screencast_save_path (save); 
+    
+    g_dbus_proxy_call (screenwin->priv->proxy,
+                      "Screencast",
+                       g_variant_new ("(sa{sv})", save_path, variant),
+                       G_DBUS_CALL_FLAGS_NONE,
+                       -1,
+                       NULL,
+                       NULL,
+                       NULL);
+
+}
+
+static void stop_screencast (ScreenWindow *screenwin)
+{
+    g_dbus_proxy_call_sync (screenwin->priv->proxy,
+                           "StopScreencast",
+                            g_variant_new ("()"),
+                            G_DBUS_CALL_FLAGS_NONE,
+                            -1,
+                            NULL,
+                            NULL);
+}
+static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
+{
+    ScreenWindow    *screenwin = SCREEN_WINDOW (user_data);
+    
+    if (screenwin->priv->is_start)
+    {
+        start_screencast (screenwin);
+    }
+    else
+    {
+        stop_screencast (screenwin);
+    }
+}
 
 static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 {
@@ -52,6 +144,12 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
         gtk_button_set_label (GTK_BUTTON (button), _("Stop"));
     else
         gtk_button_set_label (GTK_BUTTON (button), _("Start"));
+    
+    screenwin->priv->is_start = active; 
+    g_signal_connect (count,
+                      "finished",
+                     (GCallback) countdown_finished_cb,
+                      screenwin);
 
 }
 

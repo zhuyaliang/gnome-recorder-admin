@@ -75,6 +75,10 @@ static gboolean screen_countdown (gpointer data)
     if (count->priv->count_down == 0)
     {
         gtk_widget_destroy (count->priv->window);
+        usleep (1000);
+        g_print ("screen_countdown g_signal_emit start \r\n");
+        g_signal_emit (count, signals[FINISHED], 0);
+        g_print ("screen_countdown g_signal_emit end \r\n");
         return FALSE;
     }
     count->priv->count_down -= 1;

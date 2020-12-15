@@ -117,10 +117,9 @@ screen_style_init (ScreenStyle *style)
     gtk_grid_attach(GTK_GRID(table), label, 0, 1, 1, 1);
 
     spin = gtk_spin_button_new_with_range (15, 60, 1);
+    g_object_bind_property (spin, "value", style, "framerate", 0);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 30);
     gtk_grid_attach(GTK_GRID(table), spin, 1, 1, 1, 1);
-    g_object_bind_property (spin, "value", style, "framerate", 0);
-
 }
 
 static void
