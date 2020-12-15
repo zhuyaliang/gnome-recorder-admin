@@ -198,6 +198,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
     gboolean active;
 
+	gtk_widget_hide (GTK_WIDGET (screenwin));
     screen_start_count_down (count);
     create_screencast_indicator ();
     active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button));
