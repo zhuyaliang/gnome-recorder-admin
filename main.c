@@ -23,6 +23,7 @@
 #include "screen-style.h"
 #include "screen-stop.h"
 #include "screen-save.h"
+#include "screen-count.h"
 
 #define GETTEXT_PACKAGE "screen-admin"
 #define LUNAR_CALENDAR_LOCALEDIR "/usr/share/locale"
@@ -55,29 +56,11 @@ static void set_lable_font_type(GtkWidget  *lable,
 }
 static GtkWidget *create_countdown ()
 {
-    GtkWidget *hbox;
-    GtkWidget *label;
-    GtkWidget *spin;
-
-hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
-    label = gtk_label_new(NULL);
-    set_lable_font_type(label,"gray",11,("countdown"),TRUE);
-    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 12);
-    spin = gtk_spin_button_new_with_range (0, 10, 1);
-    gtk_box_pack_start (GTK_BOX (hbox), spin, FALSE, FALSE, 12);
-
-	return hbox;
 }
 static void start_record_screen (GtkWidget *button, gpointer user_data)
 {
-    ScreenSave *style = SCREEN_SAVE (user_data);
-    char       *time;
-    char       *size;
-
-    size = screen_save_get_folder_name (style);
-    time = screen_save_get_file_name   (style);
-
-    g_print ("time = %s size = %s\r\n",time, size);
+    ScreenCount *count = SCREEN_COUNT (user_data);
+    screen_start_count_down (count);
 }
 
 static GtkWidget *create_start_stop (GtkWidget *frame)
@@ -109,7 +92,7 @@ main (int argc, char **argv)
     GtkWidget *window;
     GtkWidget *vbox;
     GtkWidget *hbox;
-    GtkWidget *frame_style,*frame_stop,*frame_save;
+    GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
 
     bindtextdomain (GETTEXT_PACKAGE,LUNAR_CALENDAR_LOCALEDIR);
     textdomain (GETTEXT_PACKAGE);
@@ -136,10 +119,10 @@ main (int argc, char **argv)
     frame_save = screen_save_new (_("Save Mode"));
     gtk_box_pack_start (GTK_BOX (vbox), frame_save, FALSE, FALSE, 12);
 
-    hbox = create_countdown ();
-    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 12);
+    frame_count = screen_count_new (_("count down"));
+    gtk_box_pack_start (GTK_BOX (vbox), frame_count, FALSE, FALSE, 12);
 
-    hbox = create_start_stop (frame_save);
+    hbox = create_start_stop (frame_count);
     gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 12);
 
     gtk_widget_show_all (window);

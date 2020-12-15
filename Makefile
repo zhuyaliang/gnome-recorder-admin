@@ -1,5 +1,5 @@
 CC = gcc  
-MAINC = main.c screen-style.c screen-stop.c -g screen-save.c
+MAINC = main.c screen-style.c screen-stop.c -g screen-save.c screen-count.c
 EXEC = style
 CFLAGS = `pkg-config --cflags --libs gtk+-3.0`
 main: 
