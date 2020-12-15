@@ -78,28 +78,43 @@ static void create_screencast_indicator (void)
     GSimpleActionGroup *action_group;
     GtkBuilder   *builder;
     GMenuModel   *menu_model;
-    GtkWidget    *window;
-    GtkMenu      *menu;
-    GError       *error = NULL;
+    GtkWidget    *menu;
+	GtkWidget    *settings_item;
+	GtkWidget    *start_item;
+	GtkWidget    *stop_item;
+	GtkWidget    *quit_item;
+    GtkWidget    *skip_item;
+	GtkWidget    *separator_item;
+	GError       *error = NULL;
 
     indicator = app_indicator_new ("screen-admin",
                                    "camera-video",
                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
-    builder = gtk_builder_new_from_file ("./menu.ui");
-    menu_model = G_MENU_MODEL (gtk_builder_get_object (builder,"ScrreenAdminPopup"));
+	menu = gtk_menu_new ();
+    settings_item = gtk_menu_item_new_with_label (_("Settings"));
+	gtk_widget_set_sensitive (settings_item, TRUE);
 
+    settings_item = gtk_menu_item_new_with_label (_("Start"));
+	gtk_widget_set_sensitive (settings_item, TRUE);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), settings_item);
+    
+	stop_item = gtk_menu_item_new_with_label (_("Stop"));
+	gtk_widget_set_sensitive (settings_item, FALSE);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), stop_item);
+	
+	skip_item = gtk_menu_item_new_with_label (_("Skip"));
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), skip_item);
+	
+	separator_item = gtk_separator_menu_item_new ();
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), separator_item);
+    
+    quit_item = gtk_menu_item_new_with_label (_("Quit"));
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), quit_item);
 
-    action_group = g_simple_action_group_new ();
-    g_action_map_add_action_entries (G_ACTION_MAP (action_group),
-                                     actions,
-                                     G_N_ELEMENTS (actions),
-                                     NULL);
-    menu = GTK_MENU (gtk_menu_new_from_model (menu_model));
-    gtk_widget_insert_action_group (GTK_WIDGET (menu), "app", G_ACTION_GROUP (action_group));
-
-    app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
+	gtk_widget_show_all (menu);
+	app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_title (indicator, "screen-admin");
-    app_indicator_set_menu (indicator, menu);
+    app_indicator_set_menu (indicator, GTK_MENU(menu));
 }
 static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
 {   
