@@ -17,9 +17,7 @@
                                                
   Created Time: 2020年12月14日 星期一 09时30分29秒
  ************************************************************************/
-
 #include "screen-count.h"
-
 
 enum
 {
@@ -41,6 +39,8 @@ static gboolean on_darw (GtkWidget *widget, cairo_t *cr1, gpointer data)
     ScreenCount *count = SCREEN_COUNT (data);
     cairo_surface_t *image;
     GdkWindow       *window;
+    cairo_region_t  *region;
+    GdkDrawingContext *ctx;
     cairo_t         *cr;
     char            *file;
     int              i;
@@ -49,13 +49,21 @@ static gboolean on_darw (GtkWidget *widget, cairo_t *cr1, gpointer data)
     file = g_strdup_printf ("%s/%s","/usr/share/screen-admin/counter",count_images[i]);
     window = gtk_widget_get_window (widget);
     image = cairo_image_surface_create_from_png(file);
-    cr = gdk_cairo_create (window);
+
+    region = gdk_cairo_region_create_from_surface(image);
+    ctx = gdk_window_begin_draw_frame (window,region);
+    cr = gdk_drawing_context_get_cairo_context (ctx);
+
     cairo_set_source_rgba(cr,0.0, 0.0, 0.0, 0.45);
     cairo_set_operator (cr,CAIRO_OPERATOR_SOURCE);
     cairo_paint (cr);
     cairo_set_source_surface (cr,image,0,0);
     cairo_paint (cr);
-    
+
+    gdk_window_end_draw_frame (window, ctx);
+    cairo_region_destroy(region);
+    cairo_surface_destroy(image);
+
     g_free (file);
     return FALSE;
 }
@@ -63,14 +71,16 @@ static gboolean on_darw (GtkWidget *widget, cairo_t *cr1, gpointer data)
 static gboolean screen_countdown (gpointer data)
 {
     ScreenCount *count = SCREEN_COUNT (data);
-	
+
+    if (count->priv->count_down == 0)
+    {
+        gtk_widget_destroy (count->priv->window);
+        return FALSE;
+    }
     count->priv->count_down -= 1;
     gtk_widget_hide (count->priv->window);
-	gtk_widget_show (count->priv->window );
+    gtk_widget_show (count->priv->window );
 
-    if (count->priv->count_down == 0)    
-		return FALSE;
-    
     return TRUE;
 }
 static void count_down_changed_cb (GtkSpinButton *spin_button,
@@ -83,26 +93,31 @@ static void count_down_changed_cb (GtkSpinButton *spin_button,
     count->priv->count_down = value;
 }
 
-static GtkWidget *create_count_down_window (void)
+static GtkWidget *create_count_down_window (ScreenCount *count)
 {
     GtkWidget *window;
+    GtkWidget *darea;
     GdkVisual *visual;
     GtkWidget *toplevel;
     GdkScreen *screen;
-    
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    darea = gtk_drawing_area_new ();
+    gtk_container_add (GTK_CONTAINER (window), darea);
+
+    g_signal_connect(darea, "draw", G_CALLBACK (on_darw), count);
+    gtk_widget_show (darea);
     toplevel = gtk_widget_get_toplevel (window);
     screen = gtk_widget_get_screen(GTK_WIDGET(toplevel));
     visual = gdk_screen_get_rgba_visual(screen);
     gtk_widget_set_visual(GTK_WIDGET(toplevel), visual);
-    
+
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 380, 380);
     gtk_widget_set_app_paintable(window, TRUE);
     gtk_window_set_resizable (GTK_WINDOW(window), TRUE);
     gtk_window_set_decorated (GTK_WINDOW(window), FALSE);
-    
+
     return window;
 }
 static void
@@ -132,8 +147,8 @@ screen_count_init (ScreenCount *count)
                       count);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 5);
     gtk_box_pack_start (GTK_BOX (hbox), spin, FALSE, FALSE, 12);
-    
-    count->priv->window = create_count_down_window ();
+
+    count->priv->window = create_count_down_window (count);
 }
 
 static void
@@ -143,7 +158,7 @@ screen_count_class_init (ScreenCountClass *count_class)
 
     gobject_class = G_OBJECT_CLASS (count_class);
     gobject_class->dispose      = screen_count_dispose;
-    
+
     signals [FINISHED] =
          g_signal_new ("finished",
                        G_TYPE_FROM_CLASS (count_class),
@@ -177,11 +192,10 @@ gboolean screen_start_count_down (ScreenCount *count)
 {
     g_return_val_if_fail (SCREEN_IS_COUNT (count), FALSE);
     g_return_val_if_fail (count->priv->window != NULL, FALSE);
-    
+
     if (count->priv->count_down == 0)
         return TRUE;
-    g_signal_connect(count->priv->window, "draw", G_CALLBACK (on_darw), count);
-	g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
-    
+    g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
+
     return TRUE;
 }
