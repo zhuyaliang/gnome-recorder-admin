@@ -55,6 +55,8 @@ screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 	
 	gtk_widget_set_sensitive (screenwin->priv->stop_item,  TRUE);
 	gtk_widget_set_sensitive (screenwin->priv->start_item, FALSE);
+	
+	gtk_widget_show (GTK_WIDGET (screenwin));
 }
 static void
 screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
@@ -212,29 +214,18 @@ static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
 {
     ScreenWindow    *screenwin = SCREEN_WINDOW (user_data);
     
-    if (screenwin->priv->is_start)
-    {
-        start_screencast (screenwin);
-		gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
-    }
+    start_screencast (screenwin);
+	gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
 }
 
 static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
-    gboolean active;
 
 	gtk_widget_hide (GTK_WIDGET (screenwin));
     screen_start_count_down (count);
     create_screencast_indicator (screenwin);
-    active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button));
-    if (active)
-        gtk_button_set_label (GTK_BUTTON (button), _("Stop"));
-    else
-        gtk_button_set_label (GTK_BUTTON (button), _("Start"));
-    
-    screenwin->priv->is_start = active; 
     g_signal_connect (count,
                       "finished",
                      (GCallback) countdown_finished_cb,
@@ -248,7 +239,7 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
     GtkWidget *button;
 
     hbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
-    button = gtk_toggle_button_new_with_label ("Start");
+    button = gtk_button_new_with_label ("Start");
     
     g_signal_connect (button,
                      "clicked",
