@@ -46,26 +46,37 @@ struct _ScreenWindowPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
+static void stop_screencast (ScreenWindow *screenwin);
+
 static void
 screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 {
-
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+	
+	gtk_widget_set_sensitive (screenwin->priv->stop_item,  TRUE);
+	gtk_widget_set_sensitive (screenwin->priv->start_item, FALSE);
 }
 static void
 screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
 {
-
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+	
+	gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
+	stop_screencast (screenwin);
+	gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
 }
 
 static void
 screen_quit_item_cb (GtkMenuItem *item, gpointer user_data)
 {
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
 
 }
 
 static void
 screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
 {
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
 
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
@@ -87,7 +98,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
                      "activate",
                       G_CALLBACK (screen_start_item_cb),
                       screenwin);
-	gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
+	gtk_widget_set_sensitive (screenwin->priv->start_item, FALSE);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->start_item);
     
 	screenwin->priv->stop_item = gtk_menu_item_new_with_label (_("Stop"));
@@ -204,10 +215,7 @@ static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
     if (screenwin->priv->is_start)
     {
         start_screencast (screenwin);
-    }
-    else
-    {
-        stop_screencast (screenwin);
+		gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
     }
 }
 
@@ -352,4 +360,3 @@ screen_window_new (void)
 
     return GTK_WIDGET (screenwin);
 }
-
