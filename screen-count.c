@@ -27,7 +27,8 @@ enum
 struct _ScreenCountPrivate
 {
     int         count_down;
-    GtkWidget  *window;
+	GtkWidget  *spin_button;
+	GtkWidget  *window;
 };
 static guint signals[LAST_SIGNAL] = { 0 };
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenCount, screen_count, GTK_TYPE_FRAME)
@@ -71,15 +72,17 @@ static gboolean on_darw (GtkWidget *widget, cairo_t *cr1, gpointer data)
 static gboolean screen_countdown (gpointer data)
 {
     ScreenCount *count = SCREEN_COUNT (data);
+    gint value;
 
     if (count->priv->count_down == 0)
     {
         gtk_widget_destroy (count->priv->window);
         usleep (1000);
-        g_print ("screen_countdown g_signal_emit start \r\n");
         g_signal_emit (count, signals[FINISHED], 0);
-        g_print ("screen_countdown g_signal_emit end \r\n");
-        return FALSE;
+		value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
+		count->priv->count_down = value;
+        
+		return FALSE;
     }
     count->priv->count_down -= 1;
     gtk_widget_hide (count->priv->window);
@@ -152,7 +155,8 @@ screen_count_init (ScreenCount *count)
                       count);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 5);
     gtk_box_pack_start (GTK_BOX (hbox), spin, FALSE, FALSE, 12);
-
+	
+	count->priv->spin_button = spin;
     count->priv->window = create_count_down_window (count);
 }
 
