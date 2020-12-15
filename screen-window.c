@@ -36,80 +36,84 @@ struct _ScreenWindowPrivate
     GtkWidget  *stop;
     GtkWidget  *save;
     GtkWidget  *count;
+	GtkWidget  *settings_item;
+	GtkWidget  *start_item;
+	GtkWidget  *stop_item;
+	GtkWidget  *quit_item;
+    GtkWidget  *skip_item;
     gboolean    is_start;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
 static void
-screen_admin_satrt (GSimpleAction *action,
-                    GVariant      *parameter,
-                    gpointer       user_data)
+screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 {
-}
-static void
-screen_admin_stop (GSimpleAction *action,
-                   GVariant      *parameter,
-                   gpointer       user_data)
-{
-}
-static void
-screen_admin_quit (GSimpleAction *action,
-                   GVariant      *parameter,
-                   gpointer       user_data)
-{
-}
-static void
-screen_admin_skip (GSimpleAction *action,
-                   GVariant      *parameter,
-                   gpointer       user_data)
-{
-}
-static const GActionEntry actions[] = {
-  { "screen-admin-start", screen_admin_satrt},
-  { "screen-admin-stop",  screen_admin_stop},
-  { "screen-admin-quit",  screen_admin_quit},
-  { "screen-admin-skip",  screen_admin_skip},
-};
 
-static void create_screencast_indicator (void)
+}
+static void
+screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
+{
+
+}
+
+static void
+screen_quit_item_cb (GtkMenuItem *item, gpointer user_data)
+{
+
+}
+
+static void
+screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
+{
+
+}
+static void create_screencast_indicator (ScreenWindow *screenwin)
 {
     AppIndicator *indicator;
-    GSimpleActionGroup *action_group;
-    GtkBuilder   *builder;
-    GMenuModel   *menu_model;
     GtkWidget    *menu;
-	GtkWidget    *settings_item;
-	GtkWidget    *start_item;
-	GtkWidget    *stop_item;
-	GtkWidget    *quit_item;
-    GtkWidget    *skip_item;
 	GtkWidget    *separator_item;
-	GError       *error = NULL;
 
     indicator = app_indicator_new ("screen-admin",
                                    "camera-video",
                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 	menu = gtk_menu_new ();
-    settings_item = gtk_menu_item_new_with_label (_("Settings"));
-	gtk_widget_set_sensitive (settings_item, TRUE);
-
-    settings_item = gtk_menu_item_new_with_label (_("Start"));
-	gtk_widget_set_sensitive (settings_item, TRUE);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), settings_item);
     
-	stop_item = gtk_menu_item_new_with_label (_("Stop"));
-	gtk_widget_set_sensitive (settings_item, FALSE);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), stop_item);
+	screenwin->priv->settings_item = gtk_menu_item_new_with_label (_("Settings"));
+	gtk_widget_set_sensitive (screenwin->priv->settings_item, TRUE);
+
+    screenwin->priv->start_item = gtk_menu_item_new_with_label (_("Start"));
+    g_signal_connect (screenwin->priv->start_item,
+                     "activate",
+                      G_CALLBACK (screen_start_item_cb),
+                      screenwin);
+	gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->start_item);
+    
+	screenwin->priv->stop_item = gtk_menu_item_new_with_label (_("Stop"));
+    g_signal_connect (screenwin->priv->stop_item,
+                     "activate",
+                      G_CALLBACK (screen_stop_item_cb),
+                      screenwin);
+	gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->stop_item);
 	
-	skip_item = gtk_menu_item_new_with_label (_("Skip"));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), skip_item);
+	screenwin->priv->skip_item = gtk_menu_item_new_with_label (_("Skip"));
+    g_signal_connect (screenwin->priv->skip_item,
+                     "activate",
+                      G_CALLBACK (screen_skip_item_cb),
+                      screenwin);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->skip_item);
 	
 	separator_item = gtk_separator_menu_item_new ();
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), separator_item);
     
-    quit_item = gtk_menu_item_new_with_label (_("Quit"));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), quit_item);
+    screenwin->priv->quit_item = gtk_menu_item_new_with_label (_("Quit"));
+    g_signal_connect (screenwin->priv->quit_item,
+                     "activate",
+                      G_CALLBACK (screen_quit_item_cb),
+                      screenwin);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->quit_item);
 
 	gtk_widget_show_all (menu);
 	app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
@@ -215,7 +219,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
 	gtk_widget_hide (GTK_WIDGET (screenwin));
     screen_start_count_down (count);
-    create_screencast_indicator ();
+    create_screencast_indicator (screenwin);
     active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button));
     if (active)
         gtk_button_set_label (GTK_BUTTON (button), _("Stop"));
