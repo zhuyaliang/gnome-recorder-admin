@@ -30,7 +30,8 @@
 
 struct _ScreenWindowPrivate 
 {
-    GDBusProxy *proxy;
+    GDBusProxy   *proxy;
+    AppIndicator *indicator;
 
     GtkWidget  *style;
     GtkWidget  *stop;
@@ -83,11 +84,10 @@ screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
 {
-    AppIndicator *indicator;
     GtkWidget    *menu;
 	GtkWidget    *separator_item;
 
-    indicator = app_indicator_new ("screen-admin",
+    screenwin->priv->indicator = app_indicator_new ("screen-admin",
                                    "camera-video",
                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 	menu = gtk_menu_new ();
@@ -129,9 +129,9 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->quit_item);
 
 	gtk_widget_show_all (menu);
-	app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
-    app_indicator_set_title (indicator, "screen-admin");
-    app_indicator_set_menu (indicator, GTK_MENU(menu));
+	app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ACTIVE);
+    app_indicator_set_title (screenwin->priv->indicator, "screen-admin");
+    app_indicator_set_menu (screenwin->priv->indicator, GTK_MENU(menu));
 }
 static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
 {   
@@ -225,7 +225,6 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
 	gtk_widget_hide (GTK_WIDGET (screenwin));
     screen_start_count_down (count);
-    create_screencast_indicator (screenwin);
     g_signal_connect (count,
                       "finished",
                      (GCallback) countdown_finished_cb,
@@ -338,6 +337,10 @@ screen_window_init (ScreenWindow *screenwin)
     gtk_window_set_position (window, GTK_WIN_POS_CENTER);
     gtk_window_set_default_size (GTK_WINDOW (window),
                                  400, 400);
+    if (screenwin->priv->indicator == NULL)
+    {
+        create_screencast_indicator (screenwin);
+    }
 }
 
 GtkWidget *
