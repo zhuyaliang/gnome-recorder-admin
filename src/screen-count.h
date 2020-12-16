@@ -56,6 +56,7 @@ GtkWidget      *screen_count_new             (const char  *title);
 
 gboolean        screen_start_count_down      (ScreenCount *count);
     
+void            screen_stop_count_down       (ScreenCount *count);
 G_END_DECLS
     
 #endif

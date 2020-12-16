@@ -27,7 +27,8 @@ enum
 struct _ScreenCountPrivate
 {
     int         count_down;
-	GtkWidget  *spin_button;
+    guint       timeout_id;
+    GtkWidget  *spin_button;
 	GtkWidget  *window;
 };
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -131,17 +132,22 @@ static GtkWidget *create_count_down_window (ScreenCount *count)
 static void
 screen_count_dispose (GObject *object)
 {
-//    ScreenCount *count;
+    ScreenCount *count = SCREEN_COUNT (object);
+    if (count->priv->timeout_id != 0)
+    {
+        g_source_remove (count->priv->timeout_id);
+        count->priv->timeout_id = 0;
+    }
 }
 
 static void
 screen_count_init (ScreenCount *count)
 {
-    count->priv = screen_count_get_instance_private (count);
     GtkWidget *hbox;
     GtkWidget *label;
     GtkWidget *spin;
 
+    count->priv = screen_count_get_instance_private (count);
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
     gtk_container_add (GTK_CONTAINER (count), hbox);
     label = gtk_label_new(_("count down"));
@@ -204,7 +210,23 @@ gboolean screen_start_count_down (ScreenCount *count)
 
     if (count->priv->count_down == 0)
         return TRUE;
-    g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
+    count->priv->timeout_id = g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
 
     return TRUE;
+}
+
+void screen_stop_count_down (ScreenCount *count)
+{
+    gint value;
+    
+    if (count->priv->timeout_id != 0)
+    {
+        g_source_remove (count->priv->timeout_id);
+        count->priv->timeout_id = 0;
+    }
+    gtk_widget_hide (count->priv->window);
+    usleep (1000);
+    g_signal_emit (count, signals[FINISHED], 0);
+	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
+	count->priv->count_down = value;
 }
