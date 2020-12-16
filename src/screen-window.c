@@ -114,7 +114,7 @@ screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
 
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
-    
+    screen_stop_count_down (SCREEN_COUNT (screenwin->priv->count)); 
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
 {
