@@ -28,38 +28,13 @@
 #define GETTEXT_PACKAGE "screen-admin"
 #define LUNAR_CALENDAR_LOCALEDIR "/usr/share/locale"
 
-static void set_lable_font_type(GtkWidget  *lable,
-                                const char *color,
-                                int         font_size,
-                                const char *word,
-                                gboolean    blod)
-{
-    char *lable_type;
-
-    if(blod)
-    {
-        lable_type = g_strdup_printf ("<span foreground=\'%s\'weight=\'light\'font_desc=\'%d\'><b>%s</b></span>",
-                         color,
-                         font_size,
-                         word);
-    }
-    else
-    {
-        lable_type = g_strdup_printf("<span foreground=\'%s\'weight=\'light\'font_desc=\'%d\'>%s</span>",
-                        color,
-                        font_size,
-                        word);
-    
-    }
-    gtk_label_set_markup(GTK_LABEL(lable),lable_type);
-    g_free(lable_type);
-}
 static void app_quit(GtkWidget *object,
                      gpointer   user_data)
 {
     gtk_widget_destroy (object);
     exit (0);
 }
+
 int
 main (int argc, char **argv)
 {
