@@ -55,6 +55,7 @@ screen_style_get_property (GObject    *object,
             break;
         case PROP_FRAMERATE:
             g_value_set_int (value, style->priv->framerate);
+            break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
             break;
@@ -86,14 +87,13 @@ screen_style_set_property (GObject      *object,
 static void
 screen_style_init (ScreenStyle *style)
 {
-    style->priv = screen_style_get_instance_private (style);
 
     GtkWidget *table;
     GtkWidget *label;
     GtkWidget *check_button;
     GtkWidget *spin;
 
-
+    style->priv = screen_style_get_instance_private (style);
     table = gtk_grid_new();
     gtk_container_add (GTK_CONTAINER (style), table);
     gtk_grid_set_row_spacing(GTK_GRID(table), 10);

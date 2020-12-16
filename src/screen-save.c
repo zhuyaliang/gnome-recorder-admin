@@ -97,17 +97,17 @@ screen_save_set_property (GObject      *object,
 static void
 screen_save_init (ScreenSave *save)
 {
-    save->priv = screen_save_get_instance_private (save);
     GtkWidget *label;
     GtkWidget *table;
     GtkWidget *picker;
     GtkWidget *entry;
    
+    const char *video;
     g_autofree gchar *time1,*time2,*time3 = NULL;    
     g_autoptr(GDateTime) date_time = NULL;
     char *text = _("Screen video");
 
-    const char *video;
+    save->priv = screen_save_get_instance_private (save);
     date_time = g_date_time_new_now_local ();
     time1 = g_date_time_format (date_time, ("%x"));
     time2 = g_date_time_format (date_time, ("%X"));
