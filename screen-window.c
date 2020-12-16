@@ -18,6 +18,7 @@
   Created Time: 2020年12月15日 星期二 11时17分28秒
  ************************************************************************/
 #include <libappindicator/app-indicator.h>
+#include <libnotify/notify.h>
 
 #include "screen-window.h"
 #include "screen-style.h"
@@ -32,6 +33,7 @@ struct _ScreenWindowPrivate
 {
     GDBusProxy   *proxy;
     AppIndicator *indicator;
+    NotifyNotification *notify;
 
     GtkWidget  *style;
     GtkWidget  *stop;
@@ -49,6 +51,29 @@ G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
 static void stop_screencast (ScreenWindow *screenwin);
 
+static NotifyNotification *get_notification (void)
+{
+    NotifyNotification *notify;
+ 
+    notify_init ("Screen-Admin");
+    notify = notify_notification_new ("screen-admin",
+                                      _("Screen  ready"),
+                                      "emblem-default");
+    notify_notification_set_urgency (notify, NOTIFY_URGENCY_LOW);
+    notify_notification_set_timeout (notify, NOTIFY_EXPIRES_DEFAULT);
+
+    return notify;
+}
+
+static void screen_admin_update_notification (NotifyNotification *notify,
+                                              const char         *body,
+                                              const char         *icon)
+{
+    if (notify == NULL)
+        return;
+    notify_notification_update (notify,_("screen-admin"), body, icon);
+    notify_notification_show (notify, NULL);
+}
 static void
 screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 {
@@ -73,7 +98,7 @@ static void
 screen_quit_item_cb (GtkMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
-
+    
 }
 
 static void
@@ -133,6 +158,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
     app_indicator_set_title (screenwin->priv->indicator, "screen-admin");
     app_indicator_set_menu (screenwin->priv->indicator, GTK_MENU(menu));
 }
+
 static GVariantBuilder *get_screencast_variant (ScreenWindow *screenwin)
 {   
     GVariantBuilder *builder;
@@ -199,16 +225,38 @@ static void start_screencast (ScreenWindow *screenwin)
                        NULL);
 
 }
+static void
+stop_screencast_done (GObject      *source_object,
+                      GAsyncResult *res,
+                      gpointer      data)
+{
+    g_autoptr(GError) error = NULL;
+    GVariant    *result;
+    ScreenWindow *screenwin = SCREEN_WINDOW (data);
+
+    result = g_dbus_proxy_call_finish (G_DBUS_PROXY (source_object), res, &error);
+
+    if (result == NULL) 
+    {
+        if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+        {
+            g_printerr ("Error setting OSD's visibility: %s\n", error->message);
+        }
+    }
+
+
+}
 
 static void stop_screencast (ScreenWindow *screenwin)
 {
-    g_dbus_proxy_call_sync (screenwin->priv->proxy,
-                           "StopScreencast",
-                            g_variant_new ("()"),
-                            G_DBUS_CALL_FLAGS_NONE,
-                            -1,
-                            NULL,
-                            NULL);
+    g_dbus_proxy_call(screenwin->priv->proxy,
+                     "StopScreencast",
+                      g_variant_new ("()"),
+                      G_DBUS_CALL_FLAGS_NONE,
+                      -1,
+                      NULL,
+                      (GAsyncReadyCallback) stop_screencast_done,
+                      screenwin);
 }
 static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
 {
@@ -294,7 +342,10 @@ screen_window_constructor (GType                  type,
     
     screenwin = SCREEN_WINDOW (obj);
     screen_window_fill (screenwin);
-    
+    screen_admin_update_notification (screenwin->priv->notify,
+                                     _("The recording program is ready. Please start recording"),
+                                     "face-smile");    
+
     return obj;
 }
 static void
@@ -341,6 +392,7 @@ screen_window_init (ScreenWindow *screenwin)
     {
         create_screencast_indicator (screenwin);
     }
+    screenwin->priv->notify = get_notification ();    
 }
 
 GtkWidget *
