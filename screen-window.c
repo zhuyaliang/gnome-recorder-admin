@@ -101,6 +101,11 @@ screen_quit_item_cb (GtkMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
     
+    screen_admin_update_notification (screenwin->priv->notify,
+                                      _("Close application"),
+                                      _("Application closed successfully"),
+                                      "face-worried"); 
+    gtk_widget_destroy (GTK_WIDGET (screenwin)); 
 }
 
 static void
