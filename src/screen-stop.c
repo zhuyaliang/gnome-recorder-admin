@@ -57,15 +57,6 @@ stop_by_size_cb (GtkRadioButton *button,
     stop->priv->stop_mode = STOP_BY_SIZE;
 }
 static void
-stop_by_manual_cb (GtkRadioButton *button,
-                   gpointer        user_data)
-{
-    ScreenStop *stop = SCREEN_STOP (user_data);
-    
-    stop->priv = screen_stop_get_instance_private (stop);
-    stop->priv->stop_mode = STOP_BY_MANUALL;
-}
-static void
 screen_stop_dispose (GObject *object)
 {
     ScreenStop *stop = SCREEN_STOP (object);
@@ -90,6 +81,7 @@ screen_stop_get_property (GObject    *object,
             break;
         case PROP_STOP_SIZE:
             g_value_set_int (value, stop->priv->stop_size);
+            break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
             break;
@@ -121,16 +113,14 @@ screen_stop_set_property (GObject      *object,
 static void
 screen_stop_init (ScreenStop *stop)
 {
-    stop->priv = screen_stop_get_instance_private (stop);
     
     GtkWidget *table;
-    GtkWidget *label;
     GtkWidget *spin;
-    GtkWidget *radio1,*radio2,*radio3;
+    GtkWidget *radio1,*radio2;
     GSList    *radio_group;
     uint       length;
-	gchar     *text;
     
+    stop->priv = screen_stop_get_instance_private (stop);
     stop->priv->settings = g_settings_new (GNOME_DAEMON_MEDAI_SCHEMA);
     length = g_settings_get_uint (stop->priv->settings, GNOME_MAX_SCREENCAST_LENGTH_KEY);
     if (length <= 1)
@@ -165,14 +155,6 @@ screen_stop_init (ScreenStop *stop)
     g_object_bind_property (spin, "value", stop, "stop_size", 0);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 2);
     gtk_grid_attach(GTK_GRID(table), spin, 1, 1, 1, 1);
-
-    radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1)); 
-    radio3 = gtk_radio_button_new_with_label (radio_group, _("stop by manual"));
-    g_signal_connect (radio3,
-                     "toggled",
-                      G_CALLBACK (stop_by_manual_cb),
-                      stop);
-    gtk_grid_attach(GTK_GRID(table), radio3, 0, 2, 1, 1);
 
 }
 

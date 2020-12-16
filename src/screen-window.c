@@ -112,7 +112,7 @@ static void
 screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
-
+    
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
 {
@@ -127,7 +127,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	screenwin->priv->settings_item = gtk_menu_item_new_with_label (_("Settings"));
 	gtk_widget_set_sensitive (screenwin->priv->settings_item, TRUE);
 
-    screenwin->priv->start_item = gtk_menu_item_new_with_label (_("Start"));
+    screenwin->priv->start_item = gtk_menu_item_new_with_label (_("Start new recording"));
     g_signal_connect (screenwin->priv->start_item,
                      "activate",
                       G_CALLBACK (screen_start_item_cb),
@@ -135,7 +135,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	gtk_widget_set_sensitive (screenwin->priv->start_item, FALSE);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->start_item);
     
-	screenwin->priv->stop_item = gtk_menu_item_new_with_label (_("Stop"));
+	screenwin->priv->stop_item = gtk_menu_item_new_with_label (_("Stop recording"));
     g_signal_connect (screenwin->priv->stop_item,
                      "activate",
                       G_CALLBACK (screen_stop_item_cb),
@@ -143,7 +143,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->stop_item);
 	
-	screenwin->priv->skip_item = gtk_menu_item_new_with_label (_("Skip"));
+	screenwin->priv->skip_item = gtk_menu_item_new_with_label (_("Skip countdown"));
     g_signal_connect (screenwin->priv->skip_item,
                      "activate",
                       G_CALLBACK (screen_skip_item_cb),
@@ -153,7 +153,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	separator_item = gtk_separator_menu_item_new ();
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), separator_item);
     
-    screenwin->priv->quit_item = gtk_menu_item_new_with_label (_("Quit"));
+    screenwin->priv->quit_item = gtk_menu_item_new_with_label (_("Quit recording"));
     g_signal_connect (screenwin->priv->quit_item,
                      "activate",
                       G_CALLBACK (screen_quit_item_cb),
@@ -295,7 +295,7 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
     GtkWidget *button;
 
     hbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
-    button = gtk_button_new_with_label ("Start");
+    button = gtk_button_new_with_label (_("Start Recording"));
     
     g_signal_connect (button,
                      "clicked",
