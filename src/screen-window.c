@@ -112,6 +112,8 @@ static void
 screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+
+    gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
     
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
@@ -144,6 +146,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->stop_item);
 	
 	screenwin->priv->skip_item = gtk_menu_item_new_with_label (_("Skip countdown"));
+	gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
     g_signal_connect (screenwin->priv->skip_item,
                      "activate",
                       G_CALLBACK (screen_skip_item_cb),
@@ -273,6 +276,7 @@ static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
     
     start_screencast (screenwin);
 	gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
+    gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
 }
 
 static void screencast_button_cb (GtkWidget *button, gpointer user_data)
@@ -281,6 +285,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
 
 	gtk_widget_hide (GTK_WIDGET (screenwin));
+    gtk_widget_set_sensitive (screenwin->priv->skip_item, TRUE);
     screen_start_count_down (count);
     g_signal_connect (count,
                       "finished",
