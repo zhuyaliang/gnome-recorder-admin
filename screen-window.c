@@ -45,6 +45,7 @@ struct _ScreenWindowPrivate
 	GtkWidget  *quit_item;
     GtkWidget  *skip_item;
     gboolean    is_start;
+    char       *save_path;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
@@ -66,12 +67,13 @@ static NotifyNotification *get_notification (void)
 }
 
 static void screen_admin_update_notification (NotifyNotification *notify,
+                                              const char         *summary,
                                               const char         *body,
                                               const char         *icon)
 {
     if (notify == NULL)
         return;
-    notify_notification_update (notify,_("screen-admin"), body, icon);
+    notify_notification_update (notify, summary, body, icon);
     notify_notification_show (notify, NULL);
 }
 static void
@@ -185,6 +187,7 @@ static char *get_screencast_save_path (ScreenSave *save)
     char     *file_name;
     char     *new_name;
     int       num = 1;
+
     folder_name = screen_save_get_folder_name (save);
     file_name = screen_save_get_file_name (save);
 
@@ -207,23 +210,22 @@ static char *get_screencast_save_path (ScreenSave *save)
 static void start_screencast (ScreenWindow *screenwin)
 {
     GVariantBuilder *variant;
-    char            *save_path;
     ScreenSave      *save;
   
     save = SCREEN_SAVE (screenwin->priv->save);
     
     variant = get_screencast_variant (screenwin);
-    save_path = get_screencast_save_path (save); 
+    screenwin->priv->save_path = get_screencast_save_path (save); 
     
     g_dbus_proxy_call (screenwin->priv->proxy,
                       "Screencast",
-                       g_variant_new ("(sa{sv})", save_path, variant),
+                       g_variant_new ("(sa{sv})", screenwin->priv->save_path, variant),
                        G_DBUS_CALL_FLAGS_NONE,
                        -1,
                        NULL,
                        NULL,
                        NULL);
-
+    
 }
 static void
 stop_screencast_done (GObject      *source_object,
@@ -243,8 +245,10 @@ stop_screencast_done (GObject      *source_object,
             g_printerr ("Error setting OSD's visibility: %s\n", error->message);
         }
     }
-
-
+    screen_admin_update_notification (screenwin->priv->notify,
+                                      _("End of recording"),
+                                      screenwin->priv->save_path,
+                                      "face-cool"); 
 }
 
 static void stop_screencast (ScreenWindow *screenwin)
@@ -343,6 +347,7 @@ screen_window_constructor (GType                  type,
     screenwin = SCREEN_WINDOW (obj);
     screen_window_fill (screenwin);
     screen_admin_update_notification (screenwin->priv->notify,
+                                     _("Start application"),
                                      _("The recording program is ready. Please start recording"),
                                      "face-smile");    
 
@@ -355,6 +360,11 @@ screen_window_dispose (GObject *object)
     
     screenwin = SCREEN_WINDOW (object);
     g_object_unref (screenwin->priv->proxy);
+    
+    if (screenwin->priv->save_path != NULL)
+    {
+        g_free (screenwin->priv->save_path);
+    }
     G_OBJECT_CLASS (screen_window_parent_class)->dispose (object);
 }
 
