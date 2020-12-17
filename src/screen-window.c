@@ -116,14 +116,11 @@ screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
     screen_stop_count_down (SCREEN_COUNT (screenwin->priv->count)); 
 }
-static void create_screencast_indicator (ScreenWindow *screenwin)
+static GtkWidget *get_menu_button (ScreenWindow *screenwin)
 {
-    GtkWidget    *menu;
-	GtkWidget    *separator_item;
-
-    screenwin->priv->indicator = app_indicator_new ("screen-admin",
-                                   "camera-video",
-                                    APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    GtkWidget *menu;
+	GtkWidget *separator_item;
+	
 	menu = gtk_menu_new ();
     
 	screenwin->priv->settings_item = gtk_menu_item_new_with_label (_("Settings"));
@@ -164,6 +161,18 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->quit_item);
 
 	gtk_widget_show_all (menu);
+
+	return menu;
+}
+static void create_screencast_indicator (ScreenWindow *screenwin)
+{
+	GtkWidget *menu;
+    
+	menu = get_menu_button (screenwin);
+
+	screenwin->priv->indicator = app_indicator_new ("screen-admin",
+                                   "camera-video",
+                                    APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 	app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_title (screenwin->priv->indicator, "screen-admin");
     app_indicator_set_menu (screenwin->priv->indicator, GTK_MENU(menu));
