@@ -164,6 +164,40 @@ static GtkWidget *get_menu_button (ScreenWindow *screenwin)
 
 	return menu;
 }
+
+static void create_wayland_indicator (ScreenWindow *screenwin)
+{
+	GtkWidget *dialog;
+	GtkWidget *button;
+	GtkWidget *header;
+	GtkWidget *image;
+    GIcon     *icon;
+	GtkWidget *menu;
+
+	header = gtk_header_bar_new ();
+    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
+    gtk_header_bar_set_title (GTK_HEADER_BAR (header), "settings");
+    gtk_header_bar_set_has_subtitle (GTK_HEADER_BAR (header), FALSE);
+
+	button = gtk_menu_button_new ();
+    icon = g_themed_icon_new ("folder-videos-symbolic");
+    image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_BUTTON);
+    g_object_unref (icon);
+    gtk_container_add (GTK_CONTAINER (button), image);
+    gtk_header_bar_pack_end (GTK_HEADER_BAR (header), button);
+
+    gtk_widget_show (button);
+	dialog = gtk_dialog_new();
+	gtk_window_set_default_size (GTK_WINDOW (dialog), 1, 1);
+	gtk_window_set_titlebar (GTK_WINDOW (dialog), header);
+	
+	menu = get_menu_button (screenwin);
+	gtk_widget_show_all (menu);
+    gtk_menu_button_set_popup (GTK_MENU_BUTTON (button), menu); 
+    gtk_window_set_deletable(GTK_WINDOW (dialog), FALSE);
+    gtk_window_set_resizable(GTK_WINDOW (dialog), FALSE); 
+    gtk_widget_show_all (dialog);
+}
 static void create_screencast_indicator (ScreenWindow *screenwin)
 {
 	GtkWidget *menu;
@@ -398,7 +432,8 @@ screen_window_class_init (ScreenWindowClass *klass)
 static void
 screen_window_init (ScreenWindow *screenwin)
 {   
-    GtkWindow *window;
+    GtkWindow  *window;
+	const char *xdg_session;
 
     screenwin->priv = screen_window_get_instance_private (screenwin);
     screenwin->priv->proxy = g_dbus_proxy_new_for_bus_sync (
@@ -417,10 +452,18 @@ screen_window_init (ScreenWindow *screenwin)
     gtk_window_set_position (window, GTK_WIN_POS_CENTER);
     gtk_window_set_default_size (GTK_WINDOW (window),
                                  400, 400);
-    if (screenwin->priv->indicator == NULL)
-    {
-        create_screencast_indicator (screenwin);
-    }
+    xdg_session = g_getenv ("XDG_SESSION_TYPE");
+	if (g_strcmp0 (xdg_session, "wayland") == 0)
+	{
+		create_wayland_indicator (screenwin);
+	}
+	else
+	{
+		if (screenwin->priv->indicator == NULL)
+		{
+			create_screencast_indicator (screenwin);
+		}
+	}
     screenwin->priv->notify = get_notification ();    
 }
 
