@@ -78,7 +78,7 @@ static gboolean screen_countdown (gpointer data)
     if (count->priv->count_down == 0)
     {
         gtk_widget_hide (count->priv->window);
-        usleep (1000);
+        usleep (100000);
         g_signal_emit (count, signals[FINISHED], 0);
 		value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
 		count->priv->count_down = value;
@@ -225,7 +225,7 @@ void screen_stop_count_down (ScreenCount *count)
         count->priv->timeout_id = 0;
     }
     gtk_widget_hide (count->priv->window);
-    usleep (1000);
+    usleep (100000);
     g_signal_emit (count, signals[FINISHED], 0);
 	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
 	count->priv->count_down = value;
