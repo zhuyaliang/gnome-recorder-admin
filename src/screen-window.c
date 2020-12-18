@@ -164,34 +164,47 @@ static GtkWidget *get_menu_button (ScreenWindow *screenwin)
 
 	return menu;
 }
+static void set_widget_css (GtkWidget *box)
+{
+    GtkCssProvider  *provider;
+    GtkStyleContext *context;
+    gchar           *css = NULL;
+
+    provider = gtk_css_provider_new (); 
+    context = gtk_widget_get_style_context (box);
+    css = g_strdup_printf ("* {background-color:rgba(252,252,252,100);min-height: 1px;}");
+    gtk_css_provider_load_from_data (provider, css, -1, NULL);
+    gtk_style_context_add_provider (context,
+                                    GTK_STYLE_PROVIDER (provider),
+                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    g_object_unref (provider);
+    g_free (css);
+}
 
 static void create_wayland_indicator (ScreenWindow *screenwin)
 {
 	GtkWidget *dialog;
 	GtkWidget *button;
-	GtkWidget *header;
 	GtkWidget *image;
     GIcon     *icon;
 	GtkWidget *menu;
 
-	header = gtk_header_bar_new ();
-    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
-    gtk_header_bar_set_title (GTK_HEADER_BAR (header), "settings");
-    gtk_header_bar_set_has_subtitle (GTK_HEADER_BAR (header), FALSE);
-
 	button = gtk_menu_button_new ();
-    icon = g_themed_icon_new ("folder-videos-symbolic");
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    
+    icon = g_themed_icon_new ("camera-video");
     image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_BUTTON);
     g_object_unref (icon);
-    gtk_container_add (GTK_CONTAINER (button), image);
-    gtk_header_bar_pack_end (GTK_HEADER_BAR (header), button);
 
+    gtk_container_add (GTK_CONTAINER (button), image);
     gtk_widget_show (button);
-	dialog = gtk_dialog_new();
-	gtk_window_set_default_size (GTK_WINDOW (dialog), 1, 1);
-	gtk_window_set_titlebar (GTK_WINDOW (dialog), header);
 	
-	menu = get_menu_button (screenwin);
+    dialog = gtk_dialog_new_with_buttons (_("Recording Management"),GTK_WINDOW (screenwin),GTK_DIALOG_DESTROY_WITH_PARENT,NULL,NULL);
+    set_widget_css (dialog);
+    gtk_container_set_border_width (GTK_CONTAINER (dialog), 0);
+    gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button,GTK_RESPONSE_OK);	
+
+    menu = get_menu_button (screenwin);
 	gtk_widget_show_all (menu);
     gtk_menu_button_set_popup (GTK_MENU_BUTTON (button), menu); 
     gtk_window_set_deletable(GTK_WINDOW (dialog), FALSE);
