@@ -44,6 +44,7 @@ struct _ScreenWindowPrivate
 	GtkWidget  *stop_item;
 	GtkWidget  *quit_item;
     GtkWidget  *skip_item;
+    GtkWidget  *dialog;
     gboolean    is_start;
     char       *save_path;
 };
@@ -209,7 +210,8 @@ static void create_wayland_indicator (ScreenWindow *screenwin)
     gtk_menu_button_set_popup (GTK_MENU_BUTTON (button), menu); 
     gtk_window_set_deletable(GTK_WINDOW (dialog), FALSE);
     gtk_window_set_resizable(GTK_WINDOW (dialog), FALSE); 
-    gtk_widget_show_all (dialog);
+    screenwin->priv->dialog = dialog;
+    //gtk_widget_show_all (dialog);
 }
 static void create_screencast_indicator (ScreenWindow *screenwin)
 {
@@ -341,6 +343,9 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
 
 	gtk_widget_hide (GTK_WIDGET (screenwin));
+    if (screenwin->priv->dialog != NULL)
+        gtk_widget_show_all (screenwin->priv->dialog);
+    
     gtk_widget_set_sensitive (screenwin->priv->skip_item, TRUE);
     screen_start_count_down (count);
     g_signal_connect (count,
