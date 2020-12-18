@@ -28,6 +28,8 @@
 
 #define GNOME_SCREENCAST_NAME         "org.gnome.Shell.Screencast"
 #define GNOME_SCREENCAST_PATH         "/org/gnome/Shell/Screencast"
+#define EXTENSION1_PATH                "/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/metadata.json"
+#define EXTENSION2_PATH                "/usr/share/gnome-shell/extensions/TopIcons@phocean.net/metadata.json"
 
 struct _ScreenWindowPrivate 
 {
@@ -52,6 +54,35 @@ struct _ScreenWindowPrivate
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
 
 static void stop_screencast (ScreenWindow *screenwin);
+
+static gboolean use_appindicator (void)
+{
+	const char *xdg_session;
+    gboolean    is_xorg = TRUE;
+    gboolean    is_main;
+    gboolean    is_secondary;
+
+    xdg_session = g_getenv ("XDG_SESSION_TYPE");
+	if (g_strcmp0 (xdg_session, "wayland") == 0)
+	{
+	    is_xorg = FALSE;
+    }
+
+    is_main = g_file_test (EXTENSION1_PATH, G_FILE_TEST_EXISTS);
+    is_secondary = g_file_test (EXTENSION2_PATH, G_FILE_TEST_EXISTS);
+    
+    
+    if (is_main == TRUE)
+        return TRUE;
+    else if (is_xorg == FALSE)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return is_secondary;
+    }
+}
 
 static NotifyNotification *get_notification (void)
 {
@@ -182,7 +213,7 @@ static void set_widget_css (GtkWidget *box)
     g_free (css);
 }
 
-static void create_wayland_indicator (ScreenWindow *screenwin)
+static void create_custom_indicator (ScreenWindow *screenwin)
 {
 	GtkWidget *dialog;
 	GtkWidget *button;
@@ -451,7 +482,6 @@ static void
 screen_window_init (ScreenWindow *screenwin)
 {   
     GtkWindow  *window;
-	const char *xdg_session;
 
     screenwin->priv = screen_window_get_instance_private (screenwin);
     screenwin->priv->proxy = g_dbus_proxy_new_for_bus_sync (
@@ -470,11 +500,10 @@ screen_window_init (ScreenWindow *screenwin)
     gtk_window_set_position (window, GTK_WIN_POS_CENTER);
     gtk_window_set_default_size (GTK_WINDOW (window),
                                  400, 400);
-    xdg_session = g_getenv ("XDG_SESSION_TYPE");
-	if (g_strcmp0 (xdg_session, "wayland") == 0)
-	{
-		create_wayland_indicator (screenwin);
-	}
+    if (use_appindicator () != TRUE)
+    {
+		create_custom_indicator (screenwin);
+    }
 	else
 	{
 		if (screenwin->priv->indicator == NULL)
