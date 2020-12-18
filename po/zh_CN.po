@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: screen-admin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-16 12:00+0800\n"
+"POT-Creation-Date: 2020-12-18 10:54+0800\n"
 "PO-Revision-Date: 2020-12-16 11:57+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
 
-#: src/screen-count.c:147 src/screen-window.c:332
+#: src/screen-count.c:153 src/screen-window.c:393
 msgid "count down"
 msgstr "倒计时"
 
@@ -65,19 +65,19 @@ msgstr "关闭应用程序"
 msgid "Application closed successfully"
 msgstr "应用程序关闭成功"
 
-#: src/screen-window.c:127
+#: src/screen-window.c:126
 msgid "Settings"
 msgstr "设置"
 
-#: src/screen-window.c:130
+#: src/screen-window.c:129
 msgid "Start new recording"
 msgstr "开始录制"
 
-#: src/screen-window.c:138
+#: src/screen-window.c:137
 msgid "Stop recording"
 msgstr "完成录制"
 
-#: src/screen-window.c:146
+#: src/screen-window.c:145
 msgid "Skip countdown"
 msgstr "跳过倒计时"
 
@@ -85,34 +85,38 @@ msgstr "跳过倒计时"
 msgid "Quit recording"
 msgstr "退出录制"
 
-#: src/screen-window.c:254
+#: src/screen-window.c:202
+msgid "Recording Management"
+msgstr "录制设置"
+
+#: src/screen-window.c:313
 msgid "End of recording"
 msgstr "录制结束"
 
-#: src/screen-window.c:298
+#: src/screen-window.c:359
 msgid "Start Recording"
 msgstr "开始录制"
 
-#: src/screen-window.c:320
+#: src/screen-window.c:381
 msgid "Recording screen settings"
 msgstr "录制设置"
 
-#: src/screen-window.c:324
+#: src/screen-window.c:385
 msgid "Stop Mode"
 msgstr "停止模式"
 
-#: src/screen-window.c:328
+#: src/screen-window.c:389
 msgid "Save Mode"
 msgstr "保存模式"
 
-#: src/screen-window.c:355
+#: src/screen-window.c:416
 msgid "Start application"
 msgstr "打开应用程序"
 
-#: src/screen-window.c:356
+#: src/screen-window.c:417
 msgid "The recording program is ready. Please start recording"
 msgstr "录制程序准备好了。请开始录制"
 
-#: src/screen-window.c:400
+#: src/screen-window.c:462
 msgid "Gnome Record Screen"
 msgstr "Gnome 屏幕录制"
