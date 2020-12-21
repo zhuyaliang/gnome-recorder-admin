@@ -252,7 +252,9 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
     screenwin->priv->indicator = app_indicator_new ("screen-admin",
                                    "camera-video",
                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
-    app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ACTIVE);
+    app_indicator_set_attention_icon_full(screenwin->priv->indicator, "screen-start", "Local Attention Icon");
+    app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ATTENTION);
+
     app_indicator_set_title (screenwin->priv->indicator, "screen-admin");
     app_indicator_set_menu (screenwin->priv->indicator, GTK_MENU(menu));
 }

@@ -1,5 +1,6 @@
 actions_icons = [
   ['16x16', 'screen-admin.png'],
+  ['22x22', 'screen-start.png'],
   ['22x22', 'screen-admin.png'],
   ['24x24', 'screen-admin.png'],
   ['32x32', 'screen-admin.png'],
