@@ -70,24 +70,31 @@ static gboolean on_darw (GtkWidget *widget, cairo_t *cr1, gpointer data)
     return FALSE;
 }
 
+static gboolean send_finished_signal (gpointer data)
+{
+    ScreenCount *count = SCREEN_COUNT (data);
+    g_signal_emit (count, signals[FINISHED], 0);
+
+    return FALSE;
+}
 static gboolean screen_countdown (gpointer data)
 {
     ScreenCount *count = SCREEN_COUNT (data);
     gint value;
 
-    if (count->priv->count_down == 0)
-    {
-        gtk_widget_hide (count->priv->window);
-        usleep (100000);
-        g_signal_emit (count, signals[FINISHED], 0);
-		value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
-		count->priv->count_down = value;
-        
-		return FALSE;
-    }
-    count->priv->count_down -= 1;
     gtk_widget_hide (count->priv->window);
+    if (count->priv->count_down <= 0)
+    {
+        g_source_remove (count->priv->timeout_id);
+        count->priv->timeout_id = 0;
+    	g_timeout_add (1000, (GSourceFunc)send_finished_signal, count);
+	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
+	count->priv->count_down = value;
+        
+	return FALSE;
+    }
     gtk_widget_show (count->priv->window );
+    count->priv->count_down -= 1;
 
     return TRUE;
 }
@@ -210,7 +217,11 @@ gboolean screen_start_count_down (ScreenCount *count)
 
     if (count->priv->count_down == 0)
         return TRUE;
+
+    count->priv->count_down --;;
+    gtk_widget_hide (count->priv->window);
     count->priv->timeout_id = g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
+    gtk_widget_show (count->priv->window);
 
     return TRUE;
 }
