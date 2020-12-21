@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-stop.c
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ stop_by_time_cb (GtkRadioButton *button,
                  gpointer        user_data)
 {
     ScreenStop *stop = SCREEN_STOP (user_data);
-    
+
     stop->priv = screen_stop_get_instance_private (stop);
     stop->priv->stop_mode = STOP_BY_TIME;
 }
@@ -52,7 +52,7 @@ stop_by_size_cb (GtkRadioButton *button,
                  gpointer        user_data)
 {
     ScreenStop *stop = SCREEN_STOP (user_data);
-    
+
     stop->priv = screen_stop_get_instance_private (stop);
     stop->priv->stop_mode = STOP_BY_SIZE;
 }
@@ -60,7 +60,7 @@ static void
 screen_stop_dispose (GObject *object)
 {
     ScreenStop *stop = SCREEN_STOP (object);
-    
+
     if (stop->priv->settings)
         g_object_unref (stop->priv->settings);
     stop->priv->settings = NULL;
@@ -113,25 +113,25 @@ screen_stop_set_property (GObject      *object,
 static void
 screen_stop_init (ScreenStop *stop)
 {
-    
+
     GtkWidget *table;
     GtkWidget *spin;
     GtkWidget *radio1,*radio2;
     GSList    *radio_group;
     uint       length;
-    
+
     stop->priv = screen_stop_get_instance_private (stop);
     stop->priv->settings = g_settings_new (GNOME_DAEMON_MEDAI_SCHEMA);
     length = g_settings_get_uint (stop->priv->settings, GNOME_MAX_SCREENCAST_LENGTH_KEY);
     if (length <= 1)
-       length = 86400; 
+       length = 86400;
     table = gtk_grid_new();
     gtk_container_add (GTK_CONTAINER (stop), table);
     gtk_grid_set_row_spacing(GTK_GRID(table), 10);
     gtk_grid_set_column_spacing(GTK_GRID(table), 10);
     gtk_grid_set_column_homogeneous(GTK_GRID(table), TRUE);
 
-    radio1 = gtk_radio_button_new_with_label (NULL, _("stop by time (S)"));        
+    radio1 = gtk_radio_button_new_with_label (NULL, _("stop by time (S)"));
     g_signal_connect (radio1,
                      "toggled",
                       G_CALLBACK (stop_by_time_cb),
@@ -144,13 +144,13 @@ screen_stop_init (ScreenStop *stop)
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), (double)length);
 
     radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1)); 
-    radio2 = gtk_radio_button_new_with_label (radio_group, _("stop by size (MB)"));        
+    radio2 = gtk_radio_button_new_with_label (radio_group, _("stop by size (MB)"));
     g_signal_connect (radio2,
                      "toggled",
                       G_CALLBACK (stop_by_size_cb),
                       stop);
     gtk_grid_attach(GTK_GRID(table), radio2, 0, 1, 1, 1);
-    
+
     spin = gtk_spin_button_new_with_range (1, 10240, 1);
     g_object_bind_property (spin, "value", stop, "stop_size", 0);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 2);
@@ -162,7 +162,7 @@ static void
 screen_stop_class_init (ScreenStopClass *stop_class)
 {
     GObjectClass *gobject_class;
-    
+
     gobject_class = G_OBJECT_CLASS (stop_class);
     gobject_class->set_property = screen_stop_set_property;
     gobject_class->get_property = screen_stop_get_property;

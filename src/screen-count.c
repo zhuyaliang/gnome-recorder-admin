@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-frame.c
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ struct _ScreenCountPrivate
     int         count_down;
     guint       timeout_id;
     GtkWidget  *spin_button;
-	GtkWidget  *window;
+    GtkWidget  *window;
 };
 static guint signals[LAST_SIGNAL] = { 0 };
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenCount, screen_count, GTK_TYPE_FRAME)
@@ -87,11 +87,11 @@ static gboolean screen_countdown (gpointer data)
     {
         g_source_remove (count->priv->timeout_id);
         count->priv->timeout_id = 0;
-    	g_timeout_add (1000, (GSourceFunc)send_finished_signal, count);
-	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
-	count->priv->count_down = value;
-        
-	return FALSE;
+        g_timeout_add (1000, (GSourceFunc)send_finished_signal, count);
+        value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
+        count->priv->count_down = value;
+
+    return FALSE;
     }
     gtk_widget_show (count->priv->window );
     count->priv->count_down -= 1;
@@ -128,8 +128,8 @@ static GtkWidget *create_count_down_window (ScreenCount *count)
     gtk_widget_set_visual(GTK_WIDGET(toplevel), visual);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-	gtk_window_set_type_hint (GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_MENU);
-	gtk_window_set_default_size(GTK_WINDOW(window), 380, 380);
+    gtk_window_set_type_hint (GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_MENU);
+    gtk_window_set_default_size(GTK_WINDOW(window), 380, 380);
     gtk_widget_set_app_paintable(window, TRUE);
     gtk_window_set_resizable (GTK_WINDOW(window), TRUE);
     gtk_window_set_decorated (GTK_WINDOW(window), FALSE);
@@ -168,8 +168,8 @@ screen_count_init (ScreenCount *count)
                       count);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 5);
     gtk_box_pack_start (GTK_BOX (hbox), spin, FALSE, FALSE, 12);
-	
-	count->priv->spin_button = spin;
+
+    count->priv->spin_button = spin;
     count->priv->window = create_count_down_window (count);
 }
 
@@ -238,6 +238,6 @@ void screen_stop_count_down (ScreenCount *count)
     gtk_widget_hide (count->priv->window);
     usleep (100000);
     g_signal_emit (count, signals[FINISHED], 0);
-	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
-	count->priv->count_down = value;
+    value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
+    count->priv->count_down = value;
 }

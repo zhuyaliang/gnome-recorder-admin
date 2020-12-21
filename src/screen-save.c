@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-save.c
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ static void save_folder_changed_cb (GtkFileChooser *chooser,
 {
     ScreenSave *save = SCREEN_SAVE (user_data);
     gchar *folder_name;
-    
+
     folder_name = gtk_file_chooser_get_uri (chooser);
     screen_save_set_folder_name (save,g_filename_from_uri (folder_name,NULL,NULL));
 }
@@ -49,7 +49,7 @@ static void
 screen_save_dispose (GObject *object)
 {
     ScreenSave *save = SCREEN_SAVE (object);
-    
+
     if (save->priv->folder_name != NULL)
         g_free (save->priv->folder_name);
     if (save->priv->file_name != NULL)
@@ -101,9 +101,9 @@ screen_save_init (ScreenSave *save)
     GtkWidget *table;
     GtkWidget *picker;
     GtkWidget *entry;
-   
+
     const char *video;
-    g_autofree gchar *time1,*time2,*time3 = NULL;    
+    g_autofree gchar *time1,*time2,*time3 = NULL;
     g_autoptr(GDateTime) date_time = NULL;
     char *text = _("Screen video");
 
@@ -111,7 +111,7 @@ screen_save_init (ScreenSave *save)
     date_time = g_date_time_new_now_local ();
     time1 = g_date_time_format (date_time, ("%x"));
     time2 = g_date_time_format (date_time, ("%X"));
-    
+
     time3 = g_strdup_printf ("%s%s%s.webm",time1,text,time2);
 
     table = gtk_grid_new();
@@ -124,20 +124,20 @@ screen_save_init (ScreenSave *save)
     gtk_widget_set_halign (label, GTK_ALIGN_START);
     gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
     gtk_grid_attach (GTK_GRID (table), label, 0, 0, 1, 1);
- 
+
     picker = gtk_file_chooser_button_new ("Pick a Folder",
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
- 
+
     g_signal_connect (picker,
                      "selection-changed",
                       G_CALLBACK (save_folder_changed_cb),
                       save);
-    
+
     video = g_get_user_special_dir (G_USER_DIRECTORY_VIDEOS);
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (picker), video);
     screen_save_set_folder_name (save,video);
     gtk_grid_attach (GTK_GRID (table), picker, 1, 0, 1, 1);
-    
+
     label = gtk_label_new (_("FileName"));
     gtk_widget_set_halign (label, GTK_ALIGN_START);
     gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
@@ -159,7 +159,7 @@ screen_save_class_init (ScreenSaveClass *save_class)
     gobject_class->get_property = screen_save_get_property;
 
     gobject_class->dispose      = screen_save_dispose;
-    
+
     g_object_class_install_property (
             gobject_class,
             PROP_FILE_NAME,

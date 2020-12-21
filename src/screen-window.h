@@ -1,20 +1,20 @@
 /*************************************************************************
   File Name: screen-window.h
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-                                      
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-                                               
+
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-                                               
+
   Created Time: 2020年12月15日 星期二 11时15分27秒
  ************************************************************************/
 #ifndef __SCREEN_WINDOW__
@@ -33,7 +33,7 @@ typedef struct _ScreenWindowClass   ScreenWindowClass;
 typedef struct _ScreenWindowPrivate ScreenWindowPrivate;
 
 struct _ScreenWindow {
-    GtkWindow               parent_instance;
+    GtkWindow             parent_instance;
     ScreenWindowPrivate  *priv;
 };
 

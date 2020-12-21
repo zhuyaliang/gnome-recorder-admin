@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-stop.h
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define SCREEN_TYPE_STOP             (screen_stop_get_type ())
 #define SCREEN_STOP(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), SCREEN_TYPE_STOP, ScreenStop))
 #define SCREEN_IS_STOP(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SCREEN_TYPE_STOP))
-    
+
 typedef struct _ScreenStop          ScreenStop;
 typedef struct _ScreenStopClass     ScreenStopClass;
 typedef struct _ScreenStopPrivate   ScreenStopPrivate;
@@ -40,7 +40,7 @@ typedef struct _ScreenStopPrivate   ScreenStopPrivate;
 struct _ScreenStop
 {
     GtkFrame parent;
-    
+
     /*< private > */
     ScreenStopPrivate *priv;
 };
@@ -60,7 +60,7 @@ typedef enum
 GType           screen_stop_get_type        (void);
 
 GtkWidget      *screen_stop_new             (const char  *title);
-    
+
 int             screen_stop_get_stop_time   (ScreenStop *stop);
 
 int             screen_stop_get_stop_size   (ScreenStop *stop);
@@ -68,6 +68,6 @@ int             screen_stop_get_stop_size   (ScreenStop *stop);
 stop_type       screen_stop_get_stop_mode   (ScreenStop *stop);
 
 G_END_DECLS
-    
+
 #endif
 

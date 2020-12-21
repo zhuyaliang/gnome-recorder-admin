@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-frame.c
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 /*************************************************************************
   File Name: screen-save.h
-  
+
   Copyright (C) 2020  zhuyaliang https://github.com/zhuyaliang/
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define SCREEN_TYPE_SAVE             (screen_save_get_type ())
 #define SCREEN_SAVE(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), SCREEN_TYPE_SAVE, ScreenSave))
 #define SCREEN_IS_SAVE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SCREEN_TYPE_SAVE))
-    
+
 typedef struct _ScreenSave          ScreenSave;
 typedef struct _ScreenSaveClass     ScreenSaveClass;
 typedef struct _ScreenSavePrivate   ScreenSavePrivate;
@@ -40,7 +40,7 @@ typedef struct _ScreenSavePrivate   ScreenSavePrivate;
 struct _ScreenSave
 {
     GtkFrame parent;
-    
+
     /*< private > */
     ScreenSavePrivate *priv;
 };
@@ -53,11 +53,11 @@ struct _ScreenSaveClass
 GType           screen_save_get_type        (void);
 
 GtkWidget      *screen_save_new             (const char  *title);
-    
+
 char           *screen_save_get_folder_name (ScreenSave *save);
 
 char           *screen_save_get_file_name   (ScreenSave *save);
 
 G_END_DECLS
-    
+
 #endif

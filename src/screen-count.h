@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define SCREEN_TYPE_COUNT             (screen_count_get_type ())
 #define SCREEN_COUNT(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), SCREEN_TYPE_COUNT, ScreenCount))
 #define SCREEN_IS_COUNT(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SCREEN_TYPE_COUNT))
-    
+
 typedef struct _ScreenCount          ScreenCount;
 typedef struct _ScreenCountClass     ScreenCountClass;
 typedef struct _ScreenCountPrivate   ScreenCountPrivate;
@@ -40,7 +40,7 @@ typedef struct _ScreenCountPrivate   ScreenCountPrivate;
 struct _ScreenCount
 {
     GtkFrame parent;
-    
+
     /*< private > */
     ScreenCountPrivate *priv;
 };
@@ -55,9 +55,9 @@ GType           screen_count_get_type        (void);
 GtkWidget      *screen_count_new             (const char  *title);
 
 gboolean        screen_start_count_down      (ScreenCount *count);
-    
+
 void            screen_stop_count_down       (ScreenCount *count);
 G_END_DECLS
-    
+
 #endif
 
