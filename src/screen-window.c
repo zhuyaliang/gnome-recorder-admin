@@ -49,7 +49,7 @@ struct _ScreenWindowPrivate
     GtkWidget  *dialog;
     gboolean    is_start;
     char       *save_path;
-    
+
     guint       second;
     guint       minute;
     gboolean    show_label;
@@ -151,13 +151,22 @@ screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
     screen_stop_count_down (SCREEN_COUNT (screenwin->priv->count)); 
 }
+
+static void
+screen_time_item_cb (GtkCheckMenuItem *item, gpointer user_data)
+{
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+ 
+    screenwin->priv->show_label = gtk_check_menu_item_get_active (item);
+}
 static GtkWidget *get_menu_button (ScreenWindow *screenwin)
 {
     GtkWidget *menu;
     GtkWidget *separator_item;
+    GtkWidget *time_item;
     
     menu = gtk_menu_new ();
-    
+
     screenwin->priv->settings_item = gtk_menu_item_new_with_label (_("Settings"));
     gtk_widget_set_sensitive (screenwin->priv->settings_item, TRUE);
 
@@ -184,6 +193,17 @@ static GtkWidget *get_menu_button (ScreenWindow *screenwin)
                       G_CALLBACK (screen_skip_item_cb),
                       screenwin);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), screenwin->priv->skip_item);
+
+    separator_item = gtk_separator_menu_item_new ();
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), separator_item);
+
+    time_item = gtk_check_menu_item_new_with_label (_("Show Time"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), time_item);
+    gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (time_item), TRUE);
+    g_signal_connect (time_item,
+                     "toggled",
+                      G_CALLBACK (screen_time_item_cb),
+                      screenwin);
 
     separator_item = gtk_separator_menu_item_new ();
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), separator_item);
@@ -392,6 +412,7 @@ screen_time_changed (gpointer user_data)
 static void create_indicator_time (ScreenWindowPrivate *priv)
 {
     app_indicator_set_label (priv->indicator, "00:01", "100%");
+    priv->second = 1;
     g_timeout_add_seconds(1, screen_time_changed, priv);
 }
 static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
