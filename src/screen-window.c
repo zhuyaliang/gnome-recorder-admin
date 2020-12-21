@@ -49,6 +49,10 @@ struct _ScreenWindowPrivate
     GtkWidget  *dialog;
     gboolean    is_start;
     char       *save_path;
+    
+    guint       second;
+    guint       minute;
+    gboolean    show_label;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
@@ -360,11 +364,42 @@ static void stop_screencast (ScreenWindow *screenwin)
                       (GAsyncReadyCallback) stop_screencast_done,
                       screenwin);
 }
+
+static gboolean
+screen_time_changed (gpointer user_data)
+{
+    ScreenWindowPrivate *priv = (ScreenWindowPrivate*) user_data;
+    
+    priv->second++;
+    if (priv->second >= 60)
+    {
+        priv->second = 0;
+        priv->minute++;
+    }
+    if (priv->show_label)
+    {
+        gchar * percentstr = g_strdup_printf("%02u:%02u", priv->minute, priv->second);
+        app_indicator_set_label (priv->indicator, percentstr, "100%");
+        g_free(percentstr);
+    }
+    else 
+    {
+        app_indicator_set_label (priv->indicator, NULL, NULL);
+    }
+    return TRUE;
+}
+
+static void create_indicator_time (ScreenWindowPrivate *priv)
+{
+    app_indicator_set_label (priv->indicator, "00:01", "100%");
+    g_timeout_add_seconds(1, screen_time_changed, priv);
+}
 static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
 {
     ScreenWindow    *screenwin = SCREEN_WINDOW (user_data);
 
     start_screencast (screenwin);
+    create_indicator_time (screenwin->priv);
     gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
 }
@@ -501,6 +536,7 @@ screen_window_init (ScreenWindow *screenwin)
     gtk_window_set_position (window, GTK_WIN_POS_CENTER);
     gtk_window_set_default_size (GTK_WINDOW (window),
                                  400, 400);
+    screenwin->priv->show_label = TRUE;
     if (use_appindicator () != TRUE)
     {
         create_custom_indicator (screenwin);
