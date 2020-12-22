@@ -53,6 +53,7 @@ struct _ScreenWindowPrivate
     guint       second;
     guint       minute;
     gboolean    show_label;
+    guint       tray_timeout_id;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
@@ -128,6 +129,8 @@ screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
 
     gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
     stop_screencast (screenwin);
+    g_source_remove (screenwin->priv->tray_timeout_id);
+    screenwin->priv->tray_timeout_id = 0;
     gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
 }
 
@@ -413,7 +416,7 @@ static void create_indicator_time (ScreenWindowPrivate *priv)
 {
     app_indicator_set_label (priv->indicator, "00:01", "100%");
     priv->second = 1;
-    g_timeout_add_seconds(1, screen_time_changed, priv);
+    priv->tray_timeout_id  = g_timeout_add_seconds(1, screen_time_changed, priv);
 }
 static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
 {
@@ -523,6 +526,11 @@ screen_window_dispose (GObject *object)
     if (screenwin->priv->save_path != NULL)
     {
         g_free (screenwin->priv->save_path);
+    }
+    if (screenwin->priv->tray_timeout_id != 0)
+    {
+        g_source_remove (screenwin->priv->tray_timeout_id);
+        screenwin->priv->tray_timeout_id = 0;
     }
     G_OBJECT_CLASS (screen_window_parent_class)->dispose (object);
 }
