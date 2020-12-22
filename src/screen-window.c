@@ -175,6 +175,12 @@ screen_time_item_cb (GtkCheckMenuItem *item, gpointer user_data)
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
  
     screenwin->priv->show_label = gtk_check_menu_item_get_active (item);
+    if (!screenwin->priv->show_label)
+        app_indicator_set_label (screenwin->priv->indicator, NULL, NULL);
+    else if (screenwin->priv->minute == 0 && screenwin->priv->second == 0)
+    {
+        app_indicator_set_label (screenwin->priv->indicator, "00:00", "100%");
+    }
 }
 static GtkWidget *get_menu_button (ScreenWindow *screenwin)
 {
@@ -295,6 +301,7 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_attention_icon_full(screenwin->priv->indicator, "screen-start", "Local Attention Icon");
     app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ATTENTION);
+    app_indicator_set_label (screenwin->priv->indicator, "00:00", "100%");
 
     app_indicator_set_title (screenwin->priv->indicator, "screen-admin");
     app_indicator_set_menu (screenwin->priv->indicator, GTK_MENU(menu));
@@ -430,7 +437,8 @@ screen_time_changed (gpointer user_data)
 
 static void create_indicator_time (ScreenWindowPrivate *priv)
 {
-    app_indicator_set_label (priv->indicator, "00:01", "100%");
+    if (priv->show_label)
+        app_indicator_set_label (priv->indicator, "00:01", "100%");
     priv->second = 1;
     priv->tray_timeout_id  = g_timeout_add_seconds(1, screen_time_changed, priv);
 }
