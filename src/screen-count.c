@@ -216,8 +216,10 @@ gboolean screen_start_count_down (ScreenCount *count)
     g_return_val_if_fail (count->priv->window != NULL, FALSE);
 
     if (count->priv->count_down == 0)
+    {
+        g_signal_emit (count, signals[FINISHED], 0);
         return TRUE;
-
+    }
     count->priv->count_down --;;
     gtk_widget_hide (count->priv->window);
     count->priv->timeout_id = g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
