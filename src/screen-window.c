@@ -6,15 +6,15 @@
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-                                      
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-                                               
+
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-                                               
+
   Created Time: 2020年12月15日 星期二 11时17分28秒
  ************************************************************************/
 #include <libappindicator/app-indicator.h>
@@ -122,6 +122,21 @@ screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 
     gtk_widget_show (GTK_WIDGET (screenwin));
 }
+
+static void update_tray_time (ScreenWindow *screenwin)
+{
+    gchar * percentstr;
+
+    g_source_remove (screenwin->priv->tray_timeout_id);
+    screenwin->priv->tray_timeout_id = 0;
+
+    screenwin->priv->minute = 0;
+    screenwin->priv->second = 0;
+
+    percentstr = g_strdup_printf("%02u:%02u", screenwin->priv->minute, screenwin->priv->second);
+    app_indicator_set_label (screenwin->priv->indicator, percentstr, "100%");
+    g_free(percentstr);
+}
 static void
 screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
 {
@@ -129,8 +144,7 @@ screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
 
     gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
     stop_screencast (screenwin);
-    g_source_remove (screenwin->priv->tray_timeout_id);
-    screenwin->priv->tray_timeout_id = 0;
+    update_tray_time (screenwin);
     gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
 }
 
@@ -370,10 +384,12 @@ stop_screencast_done (GObject      *source_object,
             g_printerr ("Error setting OSD's visibility: %s\n", error->message);
         }
     }
+
     screen_admin_update_notification (screenwin->priv->notify,
                                       _("End of recording"),
                                       screenwin->priv->save_path,
                                       "face-cool"); 
+
 }
 
 static void stop_screencast (ScreenWindow *screenwin)
@@ -392,7 +408,7 @@ static gboolean
 screen_time_changed (gpointer user_data)
 {
     ScreenWindowPrivate *priv = (ScreenWindowPrivate*) user_data;
-    
+
     priv->second++;
     if (priv->second >= 60)
     {
