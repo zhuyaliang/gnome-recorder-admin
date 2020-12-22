@@ -463,10 +463,6 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
     gtk_widget_set_sensitive (screenwin->priv->skip_item, TRUE);
     screen_start_count_down (count);
-    g_signal_connect (count,
-                      "finished",
-                     (GCallback) countdown_finished_cb,
-                      screenwin);
 
 }
 
@@ -475,6 +471,7 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
     GtkWidget *hbox;
     GtkWidget *button;
 
+    ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
     hbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
     button = gtk_button_new_with_label (_("Start Recording"));
 
@@ -483,6 +480,10 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
                      (GCallback) screencast_button_cb,
                       screenwin);
 
+    g_signal_connect (count,
+                      "finished",
+                     (GCallback) countdown_finished_cb,
+                      screenwin);
     gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 12);
 
     return hbox;
