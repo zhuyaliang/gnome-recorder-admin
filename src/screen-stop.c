@@ -57,6 +57,15 @@ stop_by_size_cb (GtkRadioButton *button,
     stop->priv->stop_mode = STOP_BY_SIZE;
 }
 static void
+stop_by_unlimited_cb (GtkRadioButton *button,
+                      gpointer        user_data)
+{
+    ScreenStop *stop = SCREEN_STOP (user_data);
+
+    stop->priv = screen_stop_get_instance_private (stop);
+    stop->priv->stop_mode = STOP_BY_UNLIMITED;
+}
+static void
 screen_stop_dispose (GObject *object)
 {
     ScreenStop *stop = SCREEN_STOP (object);
@@ -116,7 +125,7 @@ screen_stop_init (ScreenStop *stop)
 
     GtkWidget *table;
     GtkWidget *spin;
-    GtkWidget *radio1,*radio2;
+    GtkWidget *radio1,*radio2,*radio3;
     GSList    *radio_group;
     uint       length;
 
@@ -137,13 +146,13 @@ screen_stop_init (ScreenStop *stop)
                       G_CALLBACK (stop_by_time_cb),
                       stop);
     gtk_grid_attach(GTK_GRID(table), radio1, 0, 0, 1, 1);
-    
+
     spin = gtk_spin_button_new_with_range (2, 86400, 1);
     g_object_bind_property (spin, "value", stop, "stop_time", 0);
     gtk_grid_attach(GTK_GRID(table), spin, 1, 0, 1, 1);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), (double)length);
 
-    radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1)); 
+    radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1));
     radio2 = gtk_radio_button_new_with_label (radio_group, _("stop by size (MB)"));
     g_signal_connect (radio2,
                      "toggled",
@@ -156,6 +165,14 @@ screen_stop_init (ScreenStop *stop)
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 2);
     gtk_grid_attach(GTK_GRID(table), spin, 1, 1, 1, 1);
 
+    radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1));
+    radio3 = gtk_radio_button_new_with_label (radio_group, _("unlimited"));
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio3), TRUE);
+    g_signal_connect (radio3,
+                     "toggled",
+                      G_CALLBACK (stop_by_unlimited_cb),
+                      stop);
+    gtk_grid_attach(GTK_GRID(table), radio3, 0, 2, 1, 1);
 }
 
 static void
