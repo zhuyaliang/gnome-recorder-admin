@@ -60,7 +60,7 @@ static void app_quit(GtkWidget *object,
     {
         remove_lock_dir ();
     }
-    gtk_widget_destroy (object);
+    destroy_screen_window (SCREEN_WINDOW (object));
     exit (0);
 }
 
@@ -127,8 +127,10 @@ main (int argc, char **argv)
     gtk_init (&argc, &argv);
 
     window = screen_window_new ();
-    g_signal_connect (window, "destroy",
-                      G_CALLBACK (app_quit), &window);
+    g_signal_connect (window,
+                     "destroy",
+                      G_CALLBACK (app_quit),
+                      NULL);
 
     gtk_widget_show_all (window);
     gtk_main ();

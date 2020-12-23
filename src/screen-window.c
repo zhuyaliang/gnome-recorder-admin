@@ -157,7 +157,8 @@ screen_quit_item_cb (GtkMenuItem *item, gpointer user_data)
                                       _("Close application"),
                                       _("Application closed successfully"),
                                       "face-worried");
-    gtk_widget_destroy (GTK_WIDGET (screenwin));
+
+    destroy_screen_window (screenwin);
 }
 
 static void
@@ -615,4 +616,13 @@ screen_window_new (void)
                             NULL);
 
     return GTK_WIDGET (screenwin);
+}
+
+void destroy_screen_window (ScreenWindow *screenwin)
+{
+    gtk_widget_destroy (screenwin->priv->style);
+    gtk_widget_destroy (screenwin->priv->save);
+    gtk_widget_destroy (screenwin->priv->stop);
+    gtk_widget_destroy (screenwin->priv->count);
+    gtk_widget_destroy (GTK_WIDGET (screenwin));
 }
