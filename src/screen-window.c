@@ -132,10 +132,14 @@ static void update_tray_time (ScreenWindow *screenwin)
 
     screenwin->priv->minute = 0;
     screenwin->priv->second = 0;
-
-    percentstr = g_strdup_printf("%02u:%02u", screenwin->priv->minute, screenwin->priv->second);
-    app_indicator_set_label (screenwin->priv->indicator, percentstr, "100%");
-    g_free(percentstr);
+    
+    if (screenwin->priv->show_label)
+    {
+        percentstr = g_strdup_printf("%02u:%02u", screenwin->priv->minute, screenwin->priv->second);
+        app_indicator_set_label (screenwin->priv->indicator, percentstr, "100%");
+        g_free(percentstr);
+    }
+    app_indicator_set_label (screenwin->priv->indicator, NULL, NULL);
 }
 static void
 screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
