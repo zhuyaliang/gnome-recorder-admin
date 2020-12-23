@@ -31,9 +31,35 @@
 #include "screen-count.h"
 #include "config.h"
 
+
+static void remove_lock_dir (void)
+{
+    DIR  *dir;
+    struct dirent *ptr;
+    char *file_path;
+
+    dir = opendir(LOCKDIR);
+    while ((ptr = readdir(dir)) != NULL)
+    {
+        if(strcmp(ptr->d_name,".")==0 || strcmp(ptr->d_name,"..")==0)
+            continue;
+        if(ptr->d_type == 8)
+        {
+            file_path = g_build_filename (LOCKDIR, ptr->d_name, NULL);
+            remove (file_path);
+            g_free (file_path);
+        }
+    }
+    closedir(dir);
+    remove (LOCKDIR);
+}
 static void app_quit(GtkWidget *object,
                      gpointer   user_data)
 {
+    if (access(LOCKDIR,F_OK) == 0)
+    {
+        remove_lock_dir ();
+    }
     gtk_widget_destroy (object);
     exit (0);
 }
