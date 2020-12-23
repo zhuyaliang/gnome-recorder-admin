@@ -30,6 +30,7 @@
 #define GNOME_SCREENCAST_PATH         "/org/gnome/Shell/Screencast"
 #define EXTENSION1_PATH                "/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/metadata.json"
 #define EXTENSION2_PATH                "/usr/share/gnome-shell/extensions/TopIcons@phocean.net/metadata.json"
+#define EXTENSION3_PATH                "/usr/share/gnome-shell/extensions/ubuntu-appindicators@ubuntu.com/metadata.json"
 
 struct _ScreenWindowPrivate 
 {
@@ -65,6 +66,7 @@ static gboolean use_appindicator (void)
     const char *xdg_session;
     gboolean    is_xorg = TRUE;
     gboolean    is_main;
+    gboolean    f1,f2;
     gboolean    is_secondary;
 
     xdg_session = g_getenv ("XDG_SESSION_TYPE");
@@ -73,7 +75,10 @@ static gboolean use_appindicator (void)
         is_xorg = FALSE;
     }
 
-    is_main = g_file_test (EXTENSION1_PATH, G_FILE_TEST_EXISTS);
+    f1 = g_file_test (EXTENSION1_PATH, G_FILE_TEST_EXISTS);
+    f2 = g_file_test (EXTENSION3_PATH, G_FILE_TEST_EXISTS);
+
+    is_main = f1 | f2;
     is_secondary = g_file_test (EXTENSION2_PATH, G_FILE_TEST_EXISTS);
 
     if (is_main == TRUE)
