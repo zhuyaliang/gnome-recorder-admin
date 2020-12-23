@@ -36,7 +36,13 @@ enum
     PROP_STOP_TIME,
     PROP_STOP_SIZE,
 };
+enum
+{
+    STOPED,
+    LAST_SIGNAL
+};
 
+static guint signals[LAST_SIGNAL] = { 0 };
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenStop, screen_stop, GTK_TYPE_FRAME)
 static void
 stop_by_time_cb (GtkRadioButton *button,
@@ -204,6 +210,15 @@ screen_stop_class_init (ScreenStopClass *stop_class)
                     "Maximum screen recording time",
                      1,10240,5,
                      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    signals [STOPED] =
+         g_signal_new ("stoped",
+                       G_TYPE_FROM_CLASS (stop_class),
+                       G_SIGNAL_RUN_LAST,
+                       0,
+                       NULL, NULL,
+                       g_cclosure_marshal_VOID__VOID,
+                       G_TYPE_NONE, 0);
+
 }
 
 GtkWidget *
