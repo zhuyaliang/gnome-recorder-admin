@@ -96,7 +96,7 @@ static gboolean use_appindicator (void)
 static NotifyNotification *get_notification (void)
 {
     NotifyNotification *notify;
- 
+
     notify_init ("Screen-Admin");
     notify = notify_notification_new ("screen-admin",
                                       _("Screen  ready"),
@@ -176,14 +176,14 @@ screen_skip_item_cb (GtkMenuItem *item, gpointer user_data)
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
 
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
-    screen_stop_count_down (SCREEN_COUNT (screenwin->priv->count)); 
+    screen_stop_count_down (SCREEN_COUNT (screenwin->priv->count));
 }
 
 static void
 screen_time_item_cb (GtkCheckMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
- 
+
     screenwin->priv->show_label = gtk_check_menu_item_get_active (item);
     if (!screenwin->priv->show_label)
         app_indicator_set_label (screenwin->priv->indicator, NULL, NULL);
@@ -290,13 +290,13 @@ static void create_custom_indicator (ScreenWindow *screenwin)
     dialog = gtk_dialog_new_with_buttons (_("Recording Management"),GTK_WINDOW (screenwin),GTK_DIALOG_DESTROY_WITH_PARENT,NULL,NULL);
     set_widget_css (dialog);
     gtk_container_set_border_width (GTK_CONTAINER (dialog), 0);
-    gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button,GTK_RESPONSE_OK);	
+    gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button,GTK_RESPONSE_OK);
 
     menu = get_menu_button (screenwin);
     gtk_widget_show_all (menu);
-    gtk_menu_button_set_popup (GTK_MENU_BUTTON (button), menu); 
+    gtk_menu_button_set_popup (GTK_MENU_BUTTON (button), menu);
     gtk_window_set_deletable(GTK_WINDOW (dialog), FALSE);
-    gtk_window_set_resizable(GTK_WINDOW (dialog), FALSE); 
+    gtk_window_set_resizable(GTK_WINDOW (dialog), FALSE);
     screenwin->priv->dialog = dialog;
     //gtk_widget_show_all (dialog);
 }
@@ -405,7 +405,7 @@ stop_screencast_done (GObject      *source_object,
     screen_admin_update_notification (screenwin->priv->notify,
                                       _("End of recording"),
                                       screenwin->priv->save_path,
-                                      "face-cool"); 
+                                      "face-cool");
 
 }
 
@@ -457,6 +457,7 @@ static void countdown_finished_cb (ScreenCount *count, gpointer user_data)
     ScreenWindow    *screenwin = SCREEN_WINDOW (user_data);
 
     start_screencast (screenwin);
+    start_screen_stop_monitor (SCREEN_STOP (screenwin->priv->stop));
     create_indicator_time (screenwin->priv);
     gtk_widget_set_sensitive (screenwin->priv->stop_item, TRUE);
     gtk_widget_set_sensitive (screenwin->priv->skip_item, FALSE);
@@ -476,12 +477,23 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
 }
 
+static void countdown_stop_cb (ScreenCount *count, gpointer user_data)
+{
+    ScreenWindow    *screenwin = SCREEN_WINDOW (user_data);
+
+    gtk_widget_set_sensitive (screenwin->priv->stop_item, FALSE);
+    stop_screencast (screenwin);
+    update_tray_time (screenwin);
+    gtk_widget_set_sensitive (screenwin->priv->start_item, TRUE);
+}
+
 static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
 {
     GtkWidget *hbox;
     GtkWidget *button;
 
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
+    ScreenStop   *stop =  SCREEN_STOP  (screenwin->priv->stop);
     hbox = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
     button = gtk_button_new_with_label (_("Start Recording"));
 
@@ -493,6 +505,11 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
     g_signal_connect (count,
                       "finished",
                      (GCallback) countdown_finished_cb,
+                      screenwin);
+
+    g_signal_connect (stop,
+                      "stoped",
+                     (GCallback) countdown_stop_cb,
                       screenwin);
     gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 12);
 
@@ -546,7 +563,7 @@ screen_window_constructor (GType                  type,
     screen_admin_update_notification (screenwin->priv->notify,
                                      _("Start application"),
                                      _("The recording program is ready. Please start recording"),
-                                     "face-smile");    
+                                     "face-smile");
 
     return obj;
 }
