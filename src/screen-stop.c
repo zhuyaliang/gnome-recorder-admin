@@ -26,9 +26,10 @@
 struct _ScreenStopPrivate
 {
     GSettings *settings;
-    int        stop_time;
-    int        stop_size;
+    guint      stop_time;
+    guint      stop_size;
     stop_type  stop_mode;
+    guint      time_id;
 };
 enum
 {
@@ -79,6 +80,11 @@ screen_stop_dispose (GObject *object)
     if (stop->priv->settings)
         g_object_unref (stop->priv->settings);
     stop->priv->settings = NULL;
+    if (stop->priv->time_id != 0)
+    {
+        g_source_remove (stop->priv->time_id);
+        stop->priv->time_id = 0;
+    }
 }
 
 static void
@@ -251,4 +257,29 @@ int screen_stop_get_stop_size (ScreenStop *stop)
 stop_type screen_stop_get_stop_mode (ScreenStop *stop)
 {
     return stop->priv->stop_mode;
+}
+
+static gboolean monitor_file_cb (gpointer data)
+{
+    static guint second = 1;
+    ScreenStop *stop = SCREEN_STOP (data);
+
+    if (stop->priv->stop_time == second)
+    {
+        g_signal_emit (stop, signals[STOPED], 0);
+        return FALSE;
+    }
+    second++;
+    return TRUE;
+}
+guint start_screen_stop_monitor (ScreenStop *stop)
+{
+    if (stop->priv->stop_mode == STOP_BY_UNLIMITED)
+    {
+        return 1;
+    }
+
+    stop->priv->time_id = g_timeout_add_seconds (1, G_SOURCE_FUNC (monitor_file_cb), stop);
+
+    return stop->priv->time_id;
 }

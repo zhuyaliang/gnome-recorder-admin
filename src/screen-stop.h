@@ -67,6 +67,8 @@ int             screen_stop_get_stop_size   (ScreenStop *stop);
 
 stop_type       screen_stop_get_stop_mode   (ScreenStop *stop);
 
+guint           start_screen_stop_monitor   (ScreenStop *stop);
+
 G_END_DECLS
 
 #endif
