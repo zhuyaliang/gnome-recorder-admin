@@ -280,7 +280,7 @@ guint start_screen_stop_monitor (ScreenStop *stop)
         return 1;
     }
 
-    stop->priv->time_id = g_timeout_add_seconds (1, G_SOURCE_FUNC (monitor_file_cb), stop);
+    stop->priv->time_id = g_timeout_add_seconds (1, (GSourceFunc) monitor_file_cb, stop);
 
     return stop->priv->time_id;
 }
