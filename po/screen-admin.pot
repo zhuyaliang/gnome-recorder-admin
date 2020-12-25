@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: screen-admin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-21 18:16+0800\n"
+"POT-Creation-Date: 2020-12-25 17:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,32 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/screen-count.c:160 src/screen-window.c:473
+#: src/screen-count.c:160 src/screen-window.c:543
 msgid "count down"
 msgstr ""
 
-#: src/screen-save.c:108
+#: src/screen-save.c:101
 msgid "Screen video"
 msgstr ""
 
-#: src/screen-save.c:123
+#: src/screen-save.c:128
 msgid "Folder"
 msgstr ""
 
-#: src/screen-save.c:141
+#: src/screen-save.c:146
 msgid "FileName"
 msgstr ""
 
-#: src/screen-stop.c:134
+#: src/screen-stop.c:155
 msgid "stop by time (S)"
 msgstr ""
 
-#: src/screen-stop.c:147
+#: src/screen-stop.c:168
 msgid "stop by size (MB)"
+msgstr ""
+
+#: src/screen-stop.c:181
+msgid "unlimited"
 msgstr ""
 
 #: src/screen-style.c:103
@@ -53,74 +57,74 @@ msgstr ""
 msgid "framerate"
 msgstr ""
 
-#: src/screen-window.c:96
+#: src/screen-window.c:102
 msgid "Screen  ready"
 msgstr ""
 
-#: src/screen-window.c:140
+#: src/screen-window.c:167
 msgid "Close application"
 msgstr ""
 
-#: src/screen-window.c:141
+#: src/screen-window.c:168
 msgid "Application closed successfully"
 msgstr ""
 
-#: src/screen-window.c:162
+#: src/screen-window.c:204
 msgid "Settings"
 msgstr ""
 
-#: src/screen-window.c:165
+#: src/screen-window.c:207
 msgid "Start new recording"
 msgstr ""
 
-#: src/screen-window.c:173
+#: src/screen-window.c:215
 msgid "Stop recording"
 msgstr ""
 
-#: src/screen-window.c:181
+#: src/screen-window.c:223
 msgid "Skip countdown"
 msgstr ""
 
-#: src/screen-window.c:192
+#: src/screen-window.c:234
 msgid "Show Time"
 msgstr ""
 
-#: src/screen-window.c:199
+#: src/screen-window.c:245
 msgid "Quit recording"
 msgstr ""
 
-#: src/screen-window.c:245
+#: src/screen-window.c:291
 msgid "Recording Management"
 msgstr ""
 
-#: src/screen-window.c:359
+#: src/screen-window.c:407
 msgid "End of recording"
 msgstr ""
 
-#: src/screen-window.c:439
+#: src/screen-window.c:500
 msgid "Start Recording"
 msgstr ""
 
-#: src/screen-window.c:461
+#: src/screen-window.c:531
 msgid "Recording screen settings"
 msgstr ""
 
-#: src/screen-window.c:465
+#: src/screen-window.c:535
 msgid "Stop Mode"
 msgstr ""
 
-#: src/screen-window.c:469
+#: src/screen-window.c:539
 msgid "Save Mode"
 msgstr ""
 
-#: src/screen-window.c:496
+#: src/screen-window.c:566
 msgid "Start application"
 msgstr ""
 
-#: src/screen-window.c:497
+#: src/screen-window.c:567
 msgid "The recording program is ready. Please start recording"
 msgstr ""
 
-#: src/screen-window.c:541
+#: src/screen-window.c:616
 msgid "Gnome Record Screen"
 msgstr ""
