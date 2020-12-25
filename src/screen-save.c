@@ -93,6 +93,21 @@ screen_save_set_property (GObject      *object,
     }
 }
 
+static char *get_screen_save_file_name (void)
+{
+    char *time3;
+    g_autofree gchar *time1,*time2 = NULL;
+    g_autoptr(GDateTime) date_time = NULL;
+    char *text = _("Screen video");
+
+    date_time = g_date_time_new_now_local ();
+    time1 = g_date_time_format (date_time, ("%x"));
+    time2 = g_date_time_format (date_time, ("%X"));
+    time3 = g_strdup_printf ("%s%s%s.webm",time1,text,time2);
+
+    return time3;
+}
+
 static void
 screen_save_init (ScreenSave *save)
 {
@@ -100,18 +115,9 @@ screen_save_init (ScreenSave *save)
     GtkWidget *table;
     GtkWidget *picker;
     GtkWidget *entry;
-
+    g_autofree gchar *time;
     const char *video;
-    g_autofree gchar *time1,*time2,*time3 = NULL;
-    g_autoptr(GDateTime) date_time = NULL;
-    char *text = _("Screen video");
-
     save->priv = screen_save_get_instance_private (save);
-    date_time = g_date_time_new_now_local ();
-    time1 = g_date_time_format (date_time, ("%x"));
-    time2 = g_date_time_format (date_time, ("%X"));
-
-    time3 = g_strdup_printf ("%s%s%s.webm",time1,text,time2);
 
     table = gtk_grid_new();
     gtk_container_add (GTK_CONTAINER (save), table);
@@ -144,7 +150,8 @@ screen_save_init (ScreenSave *save)
 
     entry = gtk_entry_new ();
     g_object_bind_property (entry, "text", save, "file_name", 0);
-    gtk_entry_set_text (GTK_ENTRY (entry), time3);
+    time = get_screen_save_file_name ();
+    gtk_entry_set_text (GTK_ENTRY (entry), time);
     gtk_grid_attach (GTK_GRID (table), entry, 1, 1, 1, 1);
 }
 
@@ -196,4 +203,13 @@ char *screen_save_get_folder_name (ScreenSave *save)
 char *screen_save_get_file_name (ScreenSave *save)
 {
     return save->priv->file_name;
+}
+
+void screen_save_update_file_name (ScreenSave *save)
+{
+    g_autofree gchar *time;
+
+    time = get_screen_save_file_name ();
+
+    g_object_set (save, "file-name", time, NULL);
 }

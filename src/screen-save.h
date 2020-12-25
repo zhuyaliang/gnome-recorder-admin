@@ -50,14 +50,15 @@ struct _ScreenSaveClass
     GtkFrameClass parent_class;
 };
 
-GType           screen_save_get_type        (void);
+GType           screen_save_get_type           (void);
 
-GtkWidget      *screen_save_new             (const char  *title);
+GtkWidget      *screen_save_new                (const char  *title);
 
-char           *screen_save_get_folder_name (ScreenSave *save);
+char           *screen_save_get_folder_name    (ScreenSave *save);
 
-char           *screen_save_get_file_name   (ScreenSave *save);
+char           *screen_save_get_file_name      (ScreenSave *save);
 
+void            screen_save_update_file_name   (ScreenSave *save);
 G_END_DECLS
 
 #endif

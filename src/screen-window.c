@@ -467,6 +467,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
+    ScreenSave   *save  = SCREEN_SAVE  (screenwin->priv->save);
 
     gtk_widget_hide (GTK_WIDGET (screenwin));
     if (screenwin->priv->dialog != NULL)
@@ -474,7 +475,7 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
     gtk_widget_set_sensitive (screenwin->priv->skip_item, TRUE);
     screen_start_count_down (count);
-
+    screen_save_update_file_name (save);
 }
 
 static void countdown_stop_cb (ScreenCount *count, gpointer user_data)
