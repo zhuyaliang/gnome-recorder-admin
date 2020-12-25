@@ -179,11 +179,11 @@ screen_stop_init (ScreenStop *stop)
 
     radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1));
     radio3 = gtk_radio_button_new_with_label (radio_group, _("unlimited"));
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio3), TRUE);
     g_signal_connect (radio3,
                      "toggled",
                       G_CALLBACK (stop_by_unlimited_cb),
                       stop);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio3), TRUE);
     gtk_grid_attach(GTK_GRID(table), radio3, 0, 2, 1, 1);
 }
 
@@ -267,6 +267,7 @@ static gboolean monitor_file_cb (gpointer data)
     if (stop->priv->stop_time == second)
     {
         g_signal_emit (stop, signals[STOPED], 0);
+        second = 1;
         return FALSE;
     }
     second++;
