@@ -144,7 +144,8 @@ static void update_tray_time (ScreenWindow *screenwin)
         app_indicator_set_label (screenwin->priv->indicator, percentstr, "100%");
         g_free(percentstr);
     }
-    app_indicator_set_label (screenwin->priv->indicator, NULL, NULL);
+    else
+        app_indicator_set_label (screenwin->priv->indicator, NULL, NULL);
 }
 static void
 screen_stop_item_cb (GtkMenuItem *item, gpointer user_data)
