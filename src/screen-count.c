@@ -82,7 +82,7 @@ static gboolean screen_countdown (gpointer data)
     ScreenCount *count = SCREEN_COUNT (data);
     gint value;
 
-    gtk_widget_hide (count->priv->window);
+    gtk_widget_queue_resize (count->priv->window);    
     if (count->priv->count_down <= 0)
     {
         g_source_remove (count->priv->timeout_id);
@@ -93,7 +93,7 @@ static gboolean screen_countdown (gpointer data)
 
     return FALSE;
     }
-    gtk_widget_show (count->priv->window );
+    //gtk_widget_show (count->priv->window );
     count->priv->count_down -= 1;
 
     return TRUE;
@@ -221,7 +221,7 @@ gboolean screen_start_count_down (ScreenCount *count)
         return TRUE;
     }
     count->priv->count_down --;;
-    gtk_widget_hide (count->priv->window);
+    gtk_widget_queue_resize (count->priv->window);    
     count->priv->timeout_id = g_timeout_add (1000, (GSourceFunc)screen_countdown, count);
     gtk_widget_show (count->priv->window);
 
