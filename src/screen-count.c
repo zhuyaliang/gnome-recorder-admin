@@ -87,11 +87,12 @@ static gboolean screen_countdown (gpointer data)
     {
         g_source_remove (count->priv->timeout_id);
         count->priv->timeout_id = 0;
+        gtk_widget_hide (count->priv->window);
         g_timeout_add (1000, (GSourceFunc)send_finished_signal, count);
         value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (count->priv->spin_button));
         count->priv->count_down = value;
 
-    return FALSE;
+        return FALSE;
     }
     //gtk_widget_show (count->priv->window );
     count->priv->count_down -= 1;
