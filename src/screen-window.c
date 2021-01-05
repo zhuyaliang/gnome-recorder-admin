@@ -121,11 +121,13 @@ static void
 screen_start_item_cb (GtkMenuItem *item, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+    ScreenSave   *save  = SCREEN_SAVE  (screenwin->priv->save);
 
     gtk_widget_set_sensitive (screenwin->priv->stop_item,  TRUE);
     gtk_widget_set_sensitive (screenwin->priv->start_item, FALSE);
 
     gtk_widget_show (GTK_WIDGET (screenwin));
+    screen_save_update_file_name (save);
 }
 
 static void update_tray_time (ScreenWindow *screenwin)
@@ -468,7 +470,6 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 {
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
     ScreenCount  *count = SCREEN_COUNT (screenwin->priv->count);
-    ScreenSave   *save  = SCREEN_SAVE  (screenwin->priv->save);
 
     gtk_widget_hide (GTK_WIDGET (screenwin));
     if (screenwin->priv->dialog != NULL)
@@ -476,7 +477,6 @@ static void screencast_button_cb (GtkWidget *button, gpointer user_data)
 
     gtk_widget_set_sensitive (screenwin->priv->skip_item, TRUE);
     screen_start_count_down (count);
-    screen_save_update_file_name (save);
 }
 
 static void countdown_stop_cb (ScreenCount *count, gpointer user_data)
