@@ -202,6 +202,18 @@ char *screen_save_get_folder_name (ScreenSave *save)
 
 char *screen_save_get_file_name (ScreenSave *save)
 {
+    int i = 0;
+    if (strlen (save->priv->file_name) == 0)
+        screen_save_update_file_name (save);
+
+    while (save->priv->file_name[i] != '\0')
+    {
+        if (G_IS_DIR_SEPARATOR (save->priv->file_name[i]))
+        {
+            save->priv->file_name[i] = '-';
+        }
+        i++;
+    }
     return save->priv->file_name;
 }
 
