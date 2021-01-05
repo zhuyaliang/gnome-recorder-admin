@@ -149,7 +149,7 @@ screen_save_init (ScreenSave *save)
     gtk_grid_attach (GTK_GRID (table), label, 0, 1, 1, 1);
 
     entry = gtk_entry_new ();
-    g_object_bind_property (entry, "text", save, "file_name", 0);
+    g_object_bind_property (entry, "text", save, "file_name", G_BINDING_BIDIRECTIONAL);
     time = get_screen_save_file_name ();
     gtk_entry_set_text (GTK_ENTRY (entry), time);
     gtk_grid_attach (GTK_GRID (table), entry, 1, 1, 1, 1);
