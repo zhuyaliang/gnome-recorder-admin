@@ -96,6 +96,7 @@ screen_save_set_property (GObject      *object,
 static char *get_screen_save_file_name (void)
 {
     char *time3;
+    int i = 0;
     g_autofree gchar *time1,*time2 = NULL;
     g_autoptr(GDateTime) date_time = NULL;
     char *text = _("Screen video");
@@ -105,6 +106,14 @@ static char *get_screen_save_file_name (void)
     time2 = g_date_time_format (date_time, ("%X"));
     time3 = g_strdup_printf ("%s%s%s.webm",time1,text,time2);
 
+    while (time3[i] != '\0')
+    {
+        if (G_IS_DIR_SEPARATOR (time3[i]))
+        {
+            time3[i] = '-';
+        }
+        i++;
+    }
     return time3;
 }
 
