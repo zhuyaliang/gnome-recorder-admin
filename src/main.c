@@ -31,7 +31,7 @@
 #include "screen-count.h"
 #include "config.h"
 
-
+#define  GDBUD_ERROR _("Error connecting gnome gdbus screencast interface. Please check whether Gnome shell is installed and running")
 static void remove_lock_dir (void)
 {
     DIR  *dir;
@@ -127,6 +127,10 @@ main (int argc, char **argv)
     gtk_init (&argc, &argv);
 
     window = screen_window_new ();
+    if (window == NULL)
+    {
+       screen_message_dialog (_("Init GDbus"), GDBUD_ERROR, ERROR);
+    }
     g_signal_connect (window,
                      "destroy",
                       G_CALLBACK (app_quit),

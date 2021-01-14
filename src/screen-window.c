@@ -32,6 +32,8 @@
 #define EXTENSION2_PATH                "/usr/share/gnome-shell/extensions/TopIcons@phocean.net/metadata.json"
 #define EXTENSION3_PATH                "/usr/share/gnome-shell/extensions/ubuntu-appindicators@ubuntu.com/metadata.json"
 
+#define MSGFORMAT    "<span foreground='red'font_desc='13'>%s </span>"
+
 struct _ScreenWindowPrivate 
 {
     GDBusProxy   *proxy;
@@ -640,9 +642,13 @@ screen_window_new (void)
     ScreenWindow *screenwin;
 
     screenwin = g_object_new (SCREEN_TYPE_WINDOW,
-                           "type", GTK_WINDOW_TOPLEVEL,
-                            NULL);
+                             "type", GTK_WINDOW_TOPLEVEL,
+                              NULL);
 
+    if (screenwin->priv->proxy == NULL)
+    {
+        return NULL;
+    }
     return GTK_WIDGET (screenwin);
 }
 
@@ -653,4 +659,60 @@ void destroy_screen_window (ScreenWindow *screenwin)
     gtk_widget_destroy (screenwin->priv->stop);
     gtk_widget_destroy (screenwin->priv->count);
     gtk_widget_destroy (GTK_WIDGET (screenwin));
+}
+int screen_message_dialog(const char *title,const char *msg,MsgType type)
+{
+    GtkWidget *dialog = NULL;
+    int ret;
+
+    switch(type)
+    {
+        case ERROR:
+        {
+            dialog = gtk_message_dialog_new(NULL,
+                                            GTK_DIALOG_DESTROY_WITH_PARENT,
+                                            GTK_MESSAGE_ERROR,
+                                            GTK_BUTTONS_OK,
+                                            "%s",title);
+            break;
+        }
+        case WARING:
+        {
+            dialog = gtk_message_dialog_new(NULL,
+                                            GTK_DIALOG_DESTROY_WITH_PARENT,
+                                            GTK_MESSAGE_WARNING,
+                                            GTK_BUTTONS_OK,
+                                            "%s",title);
+            break;
+        }
+        case INFOR:
+        {
+            dialog = gtk_message_dialog_new(NULL,
+                                            GTK_DIALOG_DESTROY_WITH_PARENT,
+                                            GTK_MESSAGE_INFO,
+                                            GTK_BUTTONS_OK,
+                                            "%s",title);
+            break;
+        }
+        case QUESTION:
+        {
+            dialog = gtk_message_dialog_new(NULL,
+                                            GTK_DIALOG_DESTROY_WITH_PARENT,
+                                            GTK_MESSAGE_QUESTION,
+                                            GTK_BUTTONS_YES_NO,
+                                            "%s",title);
+            break;
+        }
+        default :
+            break;
+
+    }
+    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(dialog),
+                                               MSGFORMAT,
+                                               msg);
+    gtk_window_set_title(GTK_WINDOW(dialog),_("Message"));
+    ret =  gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+
+    return ret;
 }
