@@ -170,12 +170,12 @@ screen_stop_init (ScreenStop *stop)
                      "toggled",
                       G_CALLBACK (stop_by_size_cb),
                       stop);
-    gtk_grid_attach(GTK_GRID(table), radio2, 0, 1, 1, 1);
+//    gtk_grid_attach(GTK_GRID(table), radio2, 0, 1, 1, 1);
 
     spin = gtk_spin_button_new_with_range (1, 10240, 1);
     g_object_bind_property (spin, "value", stop, "stop_size", 0);
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), 2);
-    gtk_grid_attach(GTK_GRID(table), spin, 1, 1, 1, 1);
+//    gtk_grid_attach(GTK_GRID(table), spin, 1, 1, 1, 1);
 
     radio_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1));
     radio3 = gtk_radio_button_new_with_label (radio_group, _("unlimited"));
