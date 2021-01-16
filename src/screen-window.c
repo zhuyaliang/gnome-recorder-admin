@@ -522,13 +522,32 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
 static void
 screen_window_fill (ScreenWindow *screenwin)
 {
-    GtkWidget *vbox;
-    GtkWidget *hbox;
-    GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
+    GtkWidget   *vbox;
+    GtkWidget   *hbox;
+    GtkWidget   *toolbar;
+	GtkToolItem *item;
+	GSList      *group;
+
+	GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
 
     vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
     gtk_container_add (GTK_CONTAINER (screenwin), vbox);
     gtk_container_set_border_width (GTK_CONTAINER (vbox), 6);
+
+	toolbar = gtk_toolbar_new ();
+	gtk_widget_set_valign (toolbar, GTK_ALIGN_CENTER);
+	gtk_widget_set_halign (toolbar, GTK_ALIGN_CENTER);
+	gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 12);
+
+	item = gtk_radio_tool_button_new (NULL);
+	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), _("Full Screen"));
+	group = gtk_radio_tool_button_get_group (GTK_RADIO_TOOL_BUTTON (item));
+	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), item, -1);
+
+
+	item = gtk_radio_tool_button_new (group);
+	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), _("Area Screen"));
+	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), item, -1);
 
     frame_style = screen_style_new (_("Recording screen settings"));
     gtk_box_pack_start (GTK_BOX (vbox), frame_style, FALSE, FALSE, 12);
@@ -543,7 +562,7 @@ screen_window_fill (ScreenWindow *screenwin)
     screenwin->priv->save = frame_save;
 
     frame_count = screen_count_new (_("count down"));
-    gtk_box_pack_start (GTK_BOX (vbox), frame_count, FALSE, FALSE, 12);
+	gtk_box_pack_start (GTK_BOX (vbox), frame_count, FALSE, FALSE, 12);
     screenwin->priv->count = frame_count;
 
     hbox = create_start_and_stop_screencast (screenwin);
