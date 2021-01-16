@@ -157,13 +157,15 @@ screen_count_init (ScreenCount *count)
 
     count->priv = screen_count_get_instance_private (count);
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+	gtk_widget_set_valign (hbox, GTK_ALIGN_CENTER);
+	gtk_widget_set_halign (hbox, GTK_ALIGN_CENTER);
     gtk_container_add (GTK_CONTAINER (count), hbox);
     label = gtk_label_new(_("count down"));
-    gtk_widget_set_halign (label, GTK_ALIGN_START);
-    gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
     gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 12);
     spin = gtk_spin_button_new_with_range (0, 10, 1);
-    g_signal_connect (spin,
+	gtk_widget_set_valign (spin, GTK_ALIGN_CENTER);
+	gtk_widget_set_halign (spin, GTK_ALIGN_CENTER);
+	g_signal_connect (spin,
                      "value-changed",
                       G_CALLBACK (count_down_changed_cb),
                       count);
