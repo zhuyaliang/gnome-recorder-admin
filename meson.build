@@ -91,7 +91,7 @@ gtk_req_version = '>= 3.22.0'
 gtk_dep = dependency('gtk+-3.0', version: gtk_req_version)
 indicator_dep = dependency('appindicator3-0.1')
 notify_dep = dependency('libnotify')
-
+math_dep = cc.find_library('m')
 # Configure data
 conf = configuration_data()
 
