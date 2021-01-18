@@ -3,4 +3,5 @@ src/screen-count.c
 src/screen-save.c
 src/screen-stop.c
 src/screen-style.c
+src/screen-area.c
 src/screen-window.c

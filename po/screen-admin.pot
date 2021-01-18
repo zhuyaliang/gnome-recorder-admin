@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: screen-admin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 17:23+0800\n"
+"POT-Creation-Date: 2021-01-18 18:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,29 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/screen-count.c:160 src/screen-window.c:543
+#: src/main.c:34
+msgid ""
+"Error connecting gnome gdbus screencast interface. Please check whether "
+"Gnome shell is installed and running"
+msgstr ""
+
+#: src/main.c:132
+msgid "Init GDbus"
+msgstr ""
+
+#: src/screen-count.c:163 src/screen-window.c:664
 msgid "count down"
 msgstr ""
 
-#: src/screen-save.c:101
+#: src/screen-save.c:102
 msgid "Screen video"
 msgstr ""
 
-#: src/screen-save.c:128
+#: src/screen-save.c:137
 msgid "Folder"
 msgstr ""
 
-#: src/screen-save.c:146
+#: src/screen-save.c:155
 msgid "FileName"
 msgstr ""
 
@@ -57,74 +67,94 @@ msgstr ""
 msgid "framerate"
 msgstr ""
 
-#: src/screen-window.c:102
+#: src/screen-area.c:297
+msgid "Select an area by clicking and dragging."
+msgstr ""
+
+#: src/screen-area.c:298
+msgid "Press ENTER to confirm or ESC to cancel"
+msgstr ""
+
+#: src/screen-window.c:117
 msgid "Screen  ready"
 msgstr ""
 
-#: src/screen-window.c:167
+#: src/screen-window.c:184
 msgid "Close application"
 msgstr ""
 
-#: src/screen-window.c:168
+#: src/screen-window.c:185
 msgid "Application closed successfully"
 msgstr ""
 
-#: src/screen-window.c:204
+#: src/screen-window.c:221
 msgid "Settings"
 msgstr ""
 
-#: src/screen-window.c:207
+#: src/screen-window.c:224
 msgid "Start new recording"
 msgstr ""
 
-#: src/screen-window.c:215
+#: src/screen-window.c:232
 msgid "Stop recording"
 msgstr ""
 
-#: src/screen-window.c:223
+#: src/screen-window.c:240
 msgid "Skip countdown"
 msgstr ""
 
-#: src/screen-window.c:234
+#: src/screen-window.c:251
 msgid "Show Time"
 msgstr ""
 
-#: src/screen-window.c:245
+#: src/screen-window.c:262
 msgid "Quit recording"
 msgstr ""
 
-#: src/screen-window.c:291
+#: src/screen-window.c:308
 msgid "Recording Management"
 msgstr ""
 
-#: src/screen-window.c:407
+#: src/screen-window.c:444
 msgid "End of recording"
 msgstr ""
 
-#: src/screen-window.c:500
+#: src/screen-window.c:535
 msgid "Start Recording"
 msgstr ""
 
-#: src/screen-window.c:531
+#: src/screen-window.c:637
+msgid "Full Screen"
+msgstr ""
+
+#: src/screen-window.c:649
+msgid "Area Screen"
+msgstr ""
+
+#: src/screen-window.c:652
 msgid "Recording screen settings"
 msgstr ""
 
-#: src/screen-window.c:535
+#: src/screen-window.c:656
 msgid "Stop Mode"
 msgstr ""
 
-#: src/screen-window.c:539
+#: src/screen-window.c:660
 msgid "Save Mode"
 msgstr ""
 
-#: src/screen-window.c:566
+#: src/screen-window.c:687
 msgid "Start application"
 msgstr ""
 
-#: src/screen-window.c:567
+#: src/screen-window.c:688
 msgid "The recording program is ready. Please start recording"
 msgstr ""
 
-#: src/screen-window.c:616
+#: src/screen-window.c:737
 msgid "Gnome Record Screen"
+msgstr ""
+
+#: src/screen-window.c:833
+msgid "Message"
 msgstr ""
