@@ -25,6 +25,7 @@
 #include "screen-stop.h"
 #include "screen-save.h"
 #include "screen-count.h"
+#include "screen-area.h"
 
 #define GNOME_SCREENCAST_NAME         "org.gnome.Shell.Screencast"
 #define GNOME_SCREENCAST_PATH         "/org/gnome/Shell/Screencast"
@@ -33,6 +34,13 @@
 #define EXTENSION3_PATH                "/usr/share/gnome-shell/extensions/ubuntu-appindicators@ubuntu.com/metadata.json"
 
 #define MSGFORMAT    "<span foreground='red'font_desc='13'>%s </span>"
+
+typedef enum
+{
+    FULL_SCREEAN,
+    AREA_SCREEN,
+    XID_SCREEN
+}RecordMode;
 
 struct _ScreenWindowPrivate 
 {
@@ -44,19 +52,24 @@ struct _ScreenWindowPrivate
     GtkWidget  *stop;
     GtkWidget  *save;
     GtkWidget  *count;
+    GtkWidget  *area;
     GtkWidget  *settings_item;
     GtkWidget  *start_item;
     GtkWidget  *stop_item;
     GtkWidget  *quit_item;
     GtkWidget  *skip_item;
     GtkWidget  *dialog;
+
+    GtkWidget  *btn;
     gboolean    is_start;
     char       *save_path;
 
     guint       second;
+    RecordMode  mode;
     guint       minute;
     gboolean    show_label;
     guint       tray_timeout_id;
+    gulong      sig1_id,sig2_id;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (ScreenWindow, screen_window, GTK_TYPE_WINDOW)
@@ -372,20 +385,40 @@ static void start_screencast (ScreenWindow *screenwin)
 {
     GVariantBuilder *variant;
     ScreenSave      *save;
+    gint32 x, y, h ,w;
 
     save = SCREEN_SAVE (screenwin->priv->save);
 
     variant = get_screencast_variant (screenwin);
     screenwin->priv->save_path = get_screencast_save_path (save);
 
-    g_dbus_proxy_call (screenwin->priv->proxy,
-                      "Screencast",
-                       g_variant_new ("(sa{sv})", screenwin->priv->save_path, variant),
-                       G_DBUS_CALL_FLAGS_NONE,
-                       -1,
-                       NULL,
-                       NULL,
-                       NULL);
+    if (screenwin->priv->mode == FULL_SCREEAN)
+    {
+        g_dbus_proxy_call (screenwin->priv->proxy,
+                          "Screencast",
+                           g_variant_new ("(sa{sv})", screenwin->priv->save_path, variant),
+                           G_DBUS_CALL_FLAGS_NONE,
+                           -1,
+                           NULL,
+                           NULL,
+                           NULL);
+    }
+    else if (screenwin->priv->mode == AREA_SCREEN)
+    {
+        x = screen_area_get_startx (SCREEN_AREA (screenwin->priv->area));
+        y = screen_area_get_starty (SCREEN_AREA (screenwin->priv->area));
+        h = screen_area_get_height (SCREEN_AREA (screenwin->priv->area));
+        w = screen_area_get_width  (SCREEN_AREA (screenwin->priv->area));
+
+        g_dbus_proxy_call (screenwin->priv->proxy,
+                          "ScreencastArea",
+                           g_variant_new ("(iiiisa{sv})",x, y, w, h, screenwin->priv->save_path, variant),
+                           G_DBUS_CALL_FLAGS_NONE,
+                           -1,
+                           NULL,
+                           NULL,
+                           NULL);
+    }
 
 }
 static void
@@ -519,6 +552,66 @@ static GtkWidget *create_start_and_stop_screencast (ScreenWindow *screenwin)
 
     return hbox;
 }
+
+static void
+screean_area_select_cb (ScreenArea *area,
+                        gpointer    user_data)
+{
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+
+    screenwin->priv->mode = AREA_SCREEN;
+}
+
+static void
+screean_area_cancel_cb (ScreenArea *area,
+                        gpointer    user_data)
+{
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+    gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (screenwin->priv->btn), TRUE);
+    screenwin->priv->mode = FULL_SCREEAN;
+}
+static void
+screen_area_mode_cb (GtkToggleToolButton *button,
+                     gpointer             user_data)
+{
+    gboolean    active;
+    GtkWidget  *area;
+    const char *name;
+
+    ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
+
+    active = gtk_toggle_tool_button_get_active(button);
+    name = gtk_widget_get_name (GTK_WIDGET (button));
+
+    if (g_strcmp0 (name, "Area") == 0 && active == TRUE)
+    {
+        area = screen_area_new ();
+        screenwin->priv->area = area;
+
+        screenwin->priv->sig1_id = g_signal_connect (area,
+                                              "selected",
+                                              (GCallback) screean_area_select_cb,
+                                               screenwin);
+
+        screenwin->priv->sig2_id = g_signal_connect (area,
+                                              "canceled",
+                                              (GCallback) screean_area_cancel_cb,
+                                               screenwin);
+
+        gtk_widget_show_all (area);
+        screenwin->priv->mode = AREA_SCREEN;
+    }
+    else if (g_strcmp0 (name, "Area") == 0 && active == FALSE)
+    {
+        screenwin->priv->mode = FULL_SCREEAN;
+        if (screenwin->priv->sig1_id > 0)
+        {
+            g_signal_handler_disconnect (screenwin->priv->area, screenwin->priv->sig1_id);
+            g_signal_handler_disconnect (screenwin->priv->area, screenwin->priv->sig2_id);
+            gtk_widget_destroy (screenwin->priv->area);
+        }
+    }
+}
 static void
 screen_window_fill (ScreenWindow *screenwin)
 {
@@ -528,7 +621,7 @@ screen_window_fill (ScreenWindow *screenwin)
     GtkToolItem *item;
     GSList      *group;
 
-GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
+    GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
 
     vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
     gtk_container_add (GTK_CONTAINER (screenwin), vbox);
@@ -540,11 +633,19 @@ GtkWidget *frame_style,*frame_stop,*frame_save,*frame_count;
     gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 12);
 
     item = gtk_radio_tool_button_new (NULL);
+    gtk_widget_set_name (GTK_WIDGET (item), "Full");
     gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), _("Full Screen"));
     group = gtk_radio_tool_button_get_group (GTK_RADIO_TOOL_BUTTON (item));
     gtk_toolbar_insert (GTK_TOOLBAR (toolbar), item, -1);
+    screenwin->priv->btn = GTK_WIDGET (item);
 
     item = gtk_radio_tool_button_new (group);
+    gtk_widget_set_name (GTK_WIDGET (item), "Area");
+    g_signal_connect (item,
+                     "toggled",
+                      G_CALLBACK (screen_area_mode_cb),
+                      screenwin);
+
     gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), _("Area Screen"));
     gtk_toolbar_insert (GTK_TOOLBAR (toolbar), item, -1);
 
@@ -640,6 +741,7 @@ screen_window_init (ScreenWindow *screenwin)
     gtk_window_set_default_size (GTK_WINDOW (window),
                                  400, 400);
     screenwin->priv->show_label = TRUE;
+    screenwin->priv->mode = FULL_SCREEAN;
     if (use_appindicator () != TRUE)
     {
         create_custom_indicator (screenwin);
