@@ -48,6 +48,14 @@ GType         screen_area_get_type         (void) G_GNUC_CONST;
 
 GtkWidget    *screen_area_new              (void);
 
+gint32        screen_area_get_height       (ScreenArea *area);
+
+gint32        screen_area_get_width        (ScreenArea *area);
+
+gint32        screen_area_get_startx       (ScreenArea *area);
+
+gint32        screen_area_get_starty       (ScreenArea *area);
+
 G_END_DECLS
 
 #endif

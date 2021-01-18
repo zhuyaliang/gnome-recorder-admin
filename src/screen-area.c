@@ -672,7 +672,7 @@ screen_area_init (ScreenArea *area)
 {
     GtkWindow  *window;
 
-    GdkCursor  *cursor;
+   // GdkCursor  *cursor;
     GdkScreen  *screen;
     GdkDisplay *display;
     GdkVisual  *visual;
@@ -689,8 +689,8 @@ screen_area_init (ScreenArea *area)
     area->priv->last_cursor = gdk_cursor_new_for_display (display, GDK_LEFT_PTR);
 
     seat = gdk_display_get_default_seat (display);
-    cursor = gdk_cursor_new_for_display (display, GDK_CROSSHAIR);
-    gdk_window_set_cursor(root_window, cursor);
+    //cursor = gdk_cursor_new_for_display (display, GDK_CROSSHAIR);
+    //gdk_window_set_cursor(root_window, cursor);
 
     gtk_container_set_border_width (GTK_CONTAINER (window), 0);
     gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
@@ -721,4 +721,36 @@ screen_area_new (void)
                          NULL);
 
     return GTK_WIDGET (area);
+}
+
+gint32
+screen_area_get_height (ScreenArea *area)
+{
+    g_return_val_if_fail (SCREEN_IS_AREA (area), -1);
+
+    return area->priv->height;
+}
+
+gint32
+screen_area_get_width (ScreenArea *area)
+{
+    g_return_val_if_fail (SCREEN_IS_AREA (area), -1);
+
+    return area->priv->width;
+}
+
+gint32
+screen_area_get_starty (ScreenArea *area)
+{
+    g_return_val_if_fail (SCREEN_IS_AREA (area), -1);
+
+    return area->priv->starty;
+}
+
+gint32
+screen_area_get_startx (ScreenArea *area)
+{
+    g_return_val_if_fail (SCREEN_IS_AREA (area), -1);
+
+    return area->priv->startx;
 }
