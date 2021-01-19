@@ -325,8 +325,8 @@ static void create_screencast_indicator (ScreenWindow *screenwin)
     menu = get_menu_button (screenwin);
 
     screenwin->priv->indicator = app_indicator_new ("screen-admin",
-                                   "camera-video",
-                                    APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+                                                    "screen-start",
+                                                     APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_attention_icon_full(screenwin->priv->indicator, "screen-start", "Local Attention Icon");
     app_indicator_set_status (screenwin->priv->indicator, APP_INDICATOR_STATUS_ATTENTION);
     app_indicator_set_label (screenwin->priv->indicator, "00:00", "100%");
@@ -381,6 +381,25 @@ static char *get_screencast_save_path (ScreenSave *save)
 
 }
 
+static void
+start_screencast_done (GObject      *source_object,
+                       GAsyncResult *res,
+                       gpointer      data)
+{
+    g_autoptr(GError) error = NULL;
+    GVariant    *result;
+    ScreenWindow *screenwin = SCREEN_WINDOW (data);
+
+    result = g_dbus_proxy_call_finish (G_DBUS_PROXY (source_object), res, &error);
+
+    if (result == NULL)
+    {
+        if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+        {
+            screen_message_dialog (_("start screen recording"), error->message, ERROR);
+        }
+    }
+}
 static void start_screencast (ScreenWindow *screenwin)
 {
     GVariantBuilder *variant;
@@ -400,8 +419,8 @@ static void start_screencast (ScreenWindow *screenwin)
                            G_DBUS_CALL_FLAGS_NONE,
                            -1,
                            NULL,
-                           NULL,
-                           NULL);
+                           (GAsyncReadyCallback)start_screencast_done,
+                           screenwin);
     }
     else if (screenwin->priv->mode == AREA_SCREEN)
     {
@@ -416,8 +435,8 @@ static void start_screencast (ScreenWindow *screenwin)
                            G_DBUS_CALL_FLAGS_NONE,
                            -1,
                            NULL,
-                           NULL,
-                           NULL);
+                           (GAsyncReadyCallback)start_screencast_done,
+                           screenwin);
     }
 
 }
