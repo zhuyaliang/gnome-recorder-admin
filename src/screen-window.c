@@ -560,6 +560,7 @@ screean_area_select_cb (ScreenArea *area,
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
 
     screenwin->priv->mode = AREA_SCREEN;
+    gtk_widget_show (GTK_WIDGET (screenwin));
 }
 
 static void
@@ -569,6 +570,7 @@ screean_area_cancel_cb (ScreenArea *area,
     ScreenWindow *screenwin = SCREEN_WINDOW (user_data);
     gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (screenwin->priv->btn), TRUE);
     screenwin->priv->mode = FULL_SCREEAN;
+    gtk_widget_show (GTK_WIDGET (screenwin));
 }
 static void
 screen_area_mode_cb (GtkToggleToolButton *button,
@@ -597,7 +599,7 @@ screen_area_mode_cb (GtkToggleToolButton *button,
                                               "canceled",
                                               (GCallback) screean_area_cancel_cb,
                                                screenwin);
-
+        gtk_widget_hide (GTK_WIDGET (screenwin));
         gtk_widget_show_all (area);
         screenwin->priv->mode = AREA_SCREEN;
     }
