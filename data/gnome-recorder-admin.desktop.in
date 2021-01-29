@@ -1,11 +1,11 @@
 [Desktop Entry]
 Name=Gnome Recording screen
 Name[zh_CN]=Gnome 录屏
-Comment=screen-admin
+Comment=gnome recorder screen admin
 Comment[zh_CN]=借助gnome-shell 录制屏幕。
 Categories=GTK;Settings;System;Utility;
 Keywords=Configuration;Utility;
-Exec=screen-admin
-Icon=screen-admin
+Exec=gnome-recorder-admin
+Icon=gnome-recorder-admin
 Terminal=false
 Type=Application

@@ -1,4 +1,4 @@
-# screen-admin
+# gnome-recorder-admin
 
 ## Explain
 

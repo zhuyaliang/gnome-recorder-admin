@@ -10,7 +10,7 @@ sources = [
 'screen-window.c',
 ]
 
-executable('screen-admin',
+executable('gnome-recorder-admin',
   sources : sources,
   dependencies : [gtk_dep, indicator_dep, notify_dep, math_dep],
   include_directories: top_srcdir,

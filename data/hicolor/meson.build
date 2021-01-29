@@ -1,10 +1,10 @@
 actions_icons = [
-  ['16x16', 'screen-admin.png'],
+  ['16x16', 'gnome-recorder-admin.png'],
   ['22x22', 'screen-start.png'],
-  ['22x22', 'screen-admin.png'],
-  ['24x24', 'screen-admin.png'],
-  ['32x32', 'screen-admin.png'],
-  ['48x48', 'screen-admin.png']
+  ['22x22', 'gnome-recorder-admin.png'],
+  ['24x24', 'gnome-recorder-admin.png'],
+  ['32x32', 'gnome-recorder-admin.png'],
+  ['48x48', 'gnome-recorder-admin.png']
 ]
 
 foreach icon: actions_icons

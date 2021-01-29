@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the screen-admin package.
+# This file is distributed under the same license as the gnome-recorder-admin package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: screen-admin\n"
+"Project-Id-Version: gnome-recorder-admin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 18:11+0800\n"
+"POT-Creation-Date: 2021-01-29 12:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "Init GDbus"
 msgstr ""
 
-#: src/screen-count.c:163 src/screen-window.c:664
+#: src/screen-count.c:163 src/screen-window.c:685
 msgid "count down"
 msgstr ""
 
@@ -115,46 +115,50 @@ msgstr ""
 msgid "Recording Management"
 msgstr ""
 
-#: src/screen-window.c:444
+#: src/screen-window.c:399
+msgid "start screen recording"
+msgstr ""
+
+#: src/screen-window.c:463
 msgid "End of recording"
 msgstr ""
 
-#: src/screen-window.c:535
+#: src/screen-window.c:554
 msgid "Start Recording"
 msgstr ""
 
-#: src/screen-window.c:637
+#: src/screen-window.c:658
 msgid "Full Screen"
 msgstr ""
 
-#: src/screen-window.c:649
+#: src/screen-window.c:670
 msgid "Area Screen"
 msgstr ""
 
-#: src/screen-window.c:652
+#: src/screen-window.c:673
 msgid "Recording screen settings"
 msgstr ""
 
-#: src/screen-window.c:656
+#: src/screen-window.c:677
 msgid "Stop Mode"
 msgstr ""
 
-#: src/screen-window.c:660
+#: src/screen-window.c:681
 msgid "Save Mode"
 msgstr ""
 
-#: src/screen-window.c:687
+#: src/screen-window.c:708
 msgid "Start application"
 msgstr ""
 
-#: src/screen-window.c:688
+#: src/screen-window.c:709
 msgid "The recording program is ready. Please start recording"
 msgstr ""
 
-#: src/screen-window.c:737
+#: src/screen-window.c:758
 msgid "Gnome Record Screen"
 msgstr ""
 
-#: src/screen-window.c:833
+#: src/screen-window.c:854
 msgid "Message"
 msgstr ""

@@ -12,6 +12,6 @@ faces = [
   ]
 foreach face: faces
   install_data(face,
-    install_dir : join_paths(get_option('prefix'), 'share', 'screen-admin', 'counter')
+    install_dir : join_paths(get_option('prefix'), 'share', 'gnome-recorder-admin', 'counter')
   )
 endforeach

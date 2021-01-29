@@ -1,4 +1,4 @@
-project('screen-admin', 'c',
+project('gnome-recorder-admin', 'c',
   version : '1.1.0',
   license : 'GPLv3',
   meson_version : '>=0.40.1',
@@ -96,7 +96,7 @@ math_dep = cc.find_library('m')
 conf = configuration_data()
 
 conf.set_quoted('PACKAGE_NAME', meson.project_name())
-conf.set_quoted('PACKAGE_URL','https://github.com/zhuyaliang/screen-admin')
+conf.set_quoted('PACKAGE_URL','https://github.com/zhuyaliang/gnome-recorder-admin')
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 conf.set_quoted('LUNAR_CALENDAR_LOCALEDIR', join_paths(get_option('prefix'), get_option('localedir')))
@@ -104,7 +104,7 @@ conf.set_quoted('DATADIR', join_paths(get_option('prefix'), get_option('datadir'
 conf.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
 conf.set_quoted('BINDIR', join_paths(get_option('prefix'), get_option('bindir')))
 conf.set_quoted('SYSCONFDIR', join_paths(get_option('prefix'), get_option('sysconfdir')))
-conf.set_quoted('LOCKDIR', '/tmp/.screen-admin-lock/')
+conf.set_quoted('LOCKDIR', '/tmp/.gnome-recorder-admin-lock/')
 conf.set_quoted('LOCALSTATEDIR', join_paths(get_option('prefix'), get_option('localstatedir')))
 conf.set_quoted('LIBEXECDIR', join_paths(get_option('prefix'), get_option('libexecdir')))
 conf.set_quoted('ICONDIR', join_paths(get_option('prefix'), get_option('datadir'), meson.project_name(), 'icon/'))
